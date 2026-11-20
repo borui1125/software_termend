@@ -143,12 +143,15 @@
             transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease, border-color 160ms ease;
         }
 
+<<<<<<< HEAD
         .button:disabled {
             opacity: 0.65;
             cursor: not-allowed;
             transform: none;
         }
 
+=======
+>>>>>>> 2cf90c0b7b25864b6cecedc957116561f940a1dc
         .button:focus-visible {
             outline: 3px solid rgba(54, 139, 145, 0.35);
             outline-offset: 3px;
@@ -268,8 +271,11 @@
     </main>
 
     <script>
+<<<<<<< HEAD
         const API_BASE = "http://127.0.0.1:5000";
 
+=======
+>>>>>>> 2cf90c0b7b25864b6cecedc957116561f940a1dc
         function showRegister() {
             document.getElementById("loginPage").style.display = "none";
             document.getElementById("registerPage").style.display = "block";
@@ -281,6 +287,7 @@
         }
 
         async function register() {
+<<<<<<< HEAD
             const usernameInput = document.getElementById("register_username");
             const emailInput = document.getElementById("register_email");
             const passwordInput = document.getElementById("register_password");
@@ -300,10 +307,16 @@
             submitBtn.disabled = true;
             try {
                 const response = await fetch(`${API_BASE}/register`, {
+=======
+            const response = await fetch(
+                "http://127.0.0.1:5000/register",
+                {
+>>>>>>> 2cf90c0b7b25864b6cecedc957116561f940a1dc
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
                     },
+<<<<<<< HEAD
                     body: JSON.stringify(payload)
                 });
 
@@ -342,10 +355,29 @@
             loginBtn.disabled = true;
             try {
                 const response = await fetch(`${API_BASE}/login`, {
+=======
+                    body: JSON.stringify({
+                        username: document.getElementById("register_username").value,
+                        email: document.getElementById("register_email").value,
+                        password: document.getElementById("register_password").value
+                    })
+                }
+            );
+
+            const data = await response.json();
+            alert(data.message);
+        }
+
+        async function login() {
+            const response = await fetch(
+                "http://127.0.0.1:5000/login",
+                {
+>>>>>>> 2cf90c0b7b25864b6cecedc957116561f940a1dc
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
                     },
+<<<<<<< HEAD
                     body: JSON.stringify(payload)
                 });
 
@@ -365,3 +397,18 @@
     </script>
 </body>
 </html>
+=======
+                    body: JSON.stringify({
+                        username: document.getElementById("login_username").value,
+                        password: document.getElementById("login_password").value
+                    })
+                }
+            );
+
+            const data = await response.json();
+            alert(data.message);
+        }
+    </script>
+</body>
+</html>
+>>>>>>> 2cf90c0b7b25864b6cecedc957116561f940a1dc
