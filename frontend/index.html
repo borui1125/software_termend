@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f3f6fb">
+    <title>管院小幫手</title>
+    <style>
+        :root {
+            color-scheme: light;
+            font-family: "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+            color: #17283e;
+            background: #f3f6fb;
+            font-synthesis: none;
+            text-rendering: optimizeLegibility;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            min-width: 320px;
+            min-height: 100vh;
+            margin: 0;
+            display: grid;
+            place-items: center;
+            padding: 48px 20px;
+            background:
+                radial-gradient(ellipse at 12% 12%, rgba(84, 142, 194, 0.13), transparent 34%),
+                radial-gradient(ellipse at 92% 88%, rgba(38, 133, 129, 0.1), transparent 31%),
+                #f3f6fb;
+        }
+
+        .page-shell {
+            width: min(100%, 440px);
+        }
+
+        .brand {
+            margin-bottom: 28px;
+            text-align: center;
+        }
+
+        .brand h1 {
+            margin: 0;
+            color: #17314b;
+            font-family: "Noto Serif TC", "Songti TC", "PMingLiU", serif;
+            font-size: clamp(26px, 6vw, 31px);
+            font-weight: 800;
+            letter-spacing: 0.12em;
+            line-height: 1.2;
+            text-indent: 0.12em;
+            text-shadow: 0 2px 12px rgba(23, 49, 75, 0.08);
+        }
+
+        .brand p {
+            margin: 9px 0 0;
+            color: #718198;
+            font-size: 14px;
+            letter-spacing: 0.04em;
+        }
+
+        .auth-card {
+            padding: 34px;
+            border: 1px solid rgba(221, 229, 239, 0.9);
+            border-radius: 22px;
+            background: rgba(255, 255, 255, 0.94);
+            box-shadow: 0 20px 55px rgba(35, 57, 84, 0.1);
+            backdrop-filter: blur(12px);
+        }
+
+        .auth-card h2 {
+            margin: 0 0 7px;
+            color: #1d344d;
+            font-size: 22px;
+            font-weight: 650;
+        }
+
+        .card-description {
+            margin: 0 0 25px;
+            color: #7a899c;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .field {
+            margin-bottom: 18px;
+        }
+
+        .field label {
+            display: block;
+            margin-bottom: 8px;
+            color: #42566f;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .field input {
+            width: 100%;
+            min-height: 48px;
+            padding: 0 14px;
+            border: 1px solid #dce4ee;
+            border-radius: 11px;
+            outline: none;
+            background: #fbfcfe;
+            color: #20364e;
+            font: inherit;
+            font-size: 15px;
+            transition: border-color 180ms ease, box-shadow 180ms ease, background 180ms ease;
+        }
+
+        .field input::placeholder {
+            color: #a7b2c1;
+        }
+
+        .field input:hover {
+            border-color: #b6c8d9;
+        }
+
+        .field input:focus {
+            border-color: #368b91;
+            background: #fff;
+            box-shadow: 0 0 0 4px rgba(54, 139, 145, 0.13);
+        }
+
+        .actions {
+            display: grid;
+            gap: 11px;
+            margin-top: 25px;
+        }
+
+        .button {
+            min-height: 48px;
+            padding: 0 18px;
+            border: 1px solid transparent;
+            border-radius: 11px;
+            cursor: pointer;
+            font: inherit;
+            font-size: 15px;
+            font-weight: 650;
+            transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease, border-color 160ms ease;
+        }
+
+        .button:focus-visible {
+            outline: 3px solid rgba(54, 139, 145, 0.35);
+            outline-offset: 3px;
+        }
+
+        .button:active {
+            transform: translateY(1px) scale(0.985);
+        }
+
+        .button-primary {
+            background: linear-gradient(110deg, #1d4c70, #267e83);
+            box-shadow: 0 7px 16px rgba(36, 104, 119, 0.2);
+            color: #fff;
+        }
+
+        .button-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 21px rgba(36, 104, 119, 0.28);
+        }
+
+        .button-secondary {
+            border-color: #e2e9f1;
+            background: #fff;
+            color: #49627c;
+        }
+
+        .button-secondary:hover {
+            transform: translateY(-1px);
+            border-color: #b9d1d5;
+            background: #f5faf9;
+            color: #246c73;
+        }
+
+        .footer-note {
+            margin: 22px 0 0;
+            color: #93a0b0;
+            font-size: 12px;
+            text-align: center;
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 32px 16px;
+            }
+
+            .brand {
+                margin-bottom: 22px;
+            }
+
+            .auth-card {
+                padding: 27px 22px;
+                border-radius: 18px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                scroll-behavior: auto !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="page-shell">
+        <header class="brand">
+            <h1>管院小幫手</h1>
+            <p>管理學院線上服務平台</p>
+        </header>
+
+        <section class="auth-card" aria-label="帳號登入與註冊">
+            <div id="loginPage">
+                <h2>歡迎回來</h2>
+                <p class="card-description">登入帳號，繼續使用管院小幫手。</p>
+
+                <div class="field">
+                    <label for="login_username">帳號</label>
+                    <input type="text" id="login_username" name="username" autocomplete="username" placeholder="請輸入帳號">
+                </div>
+                <div class="field">
+                    <label for="login_password">密碼</label>
+                    <input type="password" id="login_password" name="password" autocomplete="current-password" placeholder="請輸入密碼">
+                </div>
+
+                <div class="actions">
+                    <button class="button button-primary" type="button" onclick="login()">登入</button>
+                    <button class="button button-secondary" type="button" onclick="showRegister()">建立新帳號</button>
+                </div>
+            </div>
+
+            <div id="registerPage" style="display:none">
+                <h2>建立帳號</h2>
+                <p class="card-description">填寫以下資料，加入管院小幫手。</p>
+
+                <div class="field">
+                    <label for="register_username">帳號</label>
+                    <input type="text" id="register_username" name="register_username" autocomplete="username" placeholder="請設定帳號">
+                </div>
+                <div class="field">
+                    <label for="register_email">電子郵件</label>
+                    <input type="email" id="register_email" name="email" autocomplete="email" placeholder="name@example.com">
+                </div>
+                <div class="field">
+                    <label for="register_password">密碼</label>
+                    <input type="password" id="register_password" name="register_password" autocomplete="new-password" placeholder="請設定密碼">
+                </div>
+
+                <div class="actions">
+                    <button class="button button-primary" type="button" onclick="register()">送出註冊</button>
+                    <button class="button button-secondary" type="button" onclick="showLogin()">返回登入</button>
+                </div>
+            </div>
+        </section>
+        <p class="footer-note">管理學院 · 專屬服務入口</p>
+    </main>
+
+    <script>
+        function showRegister() {
+            document.getElementById("loginPage").style.display = "none";
+            document.getElementById("registerPage").style.display = "block";
+        }
+
+        function showLogin() {
+            document.getElementById("registerPage").style.display = "none";
+            document.getElementById("loginPage").style.display = "block";
+        }
+
+        async function register() {
+            const response = await fetch(
+                "http://127.0.0.1:5000/register",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        username: document.getElementById("register_username").value,
+                        email: document.getElementById("register_email").value,
+                        password: document.getElementById("register_password").value
+                    })
+                }
+            );
+
+            const data = await response.json();
+            alert(data.message);
+        }
+
+        async function login() {
+            const response = await fetch(
+                "http://127.0.0.1:5000/login",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        username: document.getElementById("login_username").value,
+                        password: document.getElementById("login_password").value
+                    })
+                }
+            );
+
+            const data = await response.json();
+            alert(data.message);
+        }
+    </script>
+</body>
+</html>
