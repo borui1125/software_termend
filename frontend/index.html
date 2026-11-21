@@ -1,381 +1,97 @@
-<!doctype html>
-<html lang="zh-Hant">
+<!DOCTYPE html>
+<html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#f3f6fb">
-    <title>管院小幫手</title>
-    <style>
-        :root {
-            color-scheme: light;
-            font-family: "Noto Sans TC", "Microsoft JhengHei", sans-serif;
-            color: #17283e;
-            background: #f3f6fb;
-            font-synthesis: none;
-            text-rendering: optimizeLegibility;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
-
-        * {
-            box-sizing: border-box;
-        }
-
-        body {
-            min-width: 320px;
-            min-height: 100vh;
-            margin: 0;
-            display: grid;
-            place-items: center;
-            padding: 48px 20px;
-            background:
-                radial-gradient(ellipse at 12% 12%, rgba(84, 142, 194, 0.13), transparent 34%),
-                radial-gradient(ellipse at 92% 88%, rgba(38, 133, 129, 0.1), transparent 31%),
-                #f3f6fb;
-        }
-
-        .page-shell {
-            width: min(100%, 440px);
-        }
-
-        .brand {
-            margin-bottom: 28px;
-            text-align: center;
-        }
-
-        .brand h1 {
-            margin: 0;
-            color: #17314b;
-            font-family: "Noto Serif TC", "Songti TC", "PMingLiU", serif;
-            font-size: clamp(26px, 6vw, 31px);
-            font-weight: 800;
-            letter-spacing: 0.12em;
-            line-height: 1.2;
-            text-indent: 0.12em;
-            text-shadow: 0 2px 12px rgba(23, 49, 75, 0.08);
-        }
-
-        .brand p {
-            margin: 9px 0 0;
-            color: #718198;
-            font-size: 14px;
-            letter-spacing: 0.04em;
-        }
-
-        .auth-card {
-            padding: 34px;
-            border: 1px solid rgba(221, 229, 239, 0.9);
-            border-radius: 22px;
-            background: rgba(255, 255, 255, 0.94);
-            box-shadow: 0 20px 55px rgba(35, 57, 84, 0.1);
-            backdrop-filter: blur(12px);
-        }
-
-        .auth-card h2 {
-            margin: 0 0 7px;
-            color: #1d344d;
-            font-size: 22px;
-            font-weight: 650;
-        }
-
-        .card-description {
-            margin: 0 0 25px;
-            color: #7a899c;
-            font-size: 14px;
-            line-height: 1.6;
-        }
-
-        .field {
-            margin-bottom: 18px;
-        }
-
-        .field label {
-            display: block;
-            margin-bottom: 8px;
-            color: #42566f;
-            font-size: 13px;
-            font-weight: 600;
-        }
-
-        .field input,
-        .field select {
-            width: 100%;
-            min-height: 48px;
-            padding: 0 14px;
-            border: 1px solid #dce4ee;
-            border-radius: 11px;
-            outline: none;
-            background: #fbfcfe;
-            color: #20364e;
-            font: inherit;
-            font-size: 15px;
-            transition: border-color 180ms ease, box-shadow 180ms ease, background 180ms ease;
-        }
-
-        .field input::placeholder {
-            color: #a7b2c1;
-        }
-
-        .field input:hover,
-        .field select:hover {
-            border-color: #b6c8d9;
-        }
-
-        .field input:focus,
-        .field select:focus {
-            border-color: #368b91;
-            background: #fff;
-            box-shadow: 0 0 0 4px rgba(54, 139, 145, 0.13);
-        }
-
-        .actions {
-            display: grid;
-            gap: 11px;
-            margin-top: 25px;
-        }
-
-        .button {
-            min-height: 48px;
-            padding: 0 18px;
-            border: 1px solid transparent;
-            border-radius: 11px;
-            cursor: pointer;
-            font: inherit;
-            font-size: 15px;
-            font-weight: 650;
-            transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease, border-color 160ms ease;
-        }
-
-        .button:disabled {
-            opacity: 0.65;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .button:focus-visible {
-            outline: 3px solid rgba(54, 139, 145, 0.35);
-            outline-offset: 3px;
-        }
-
-        .button:active {
-            transform: translateY(1px) scale(0.985);
-        }
-
-        .button-primary {
-            background: linear-gradient(110deg, #1d4c70, #267e83);
-            box-shadow: 0 7px 16px rgba(36, 104, 119, 0.2);
-            color: #fff;
-        }
-
-        .button-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 21px rgba(36, 104, 119, 0.28);
-        }
-
-        .button-secondary {
-            border-color: #e2e9f1;
-            background: #fff;
-            color: #49627c;
-        }
-
-        .button-secondary:hover {
-            transform: translateY(-1px);
-            border-color: #b9d1d5;
-            background: #f5faf9;
-            color: #246c73;
-        }
-
-        .guest-link {
-            display: block;
-            margin-top: 16px;
-            text-align: center;
-            color: #267e83;
-            font-size: 13px;
-            font-weight: 600;
-            text-decoration: none;
-        }
-
-        .guest-link:hover {
-            text-decoration: underline;
-        }
-
-        .footer-note {
-            margin: 22px 0 0;
-            color: #93a0b0;
-            font-size: 12px;
-            text-align: center;
-        }
-
-        @media (max-width: 480px) {
-            body {
-                padding: 32px 16px;
-            }
-            .brand {
-                margin-bottom: 22px;
-            }
-            .auth-card {
-                padding: 27px 22px;
-                border-radius: 18px;
-            }
-        }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管院小幫手 - 服務入口</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <main class="page-shell">
-        <header class="brand">
-            <h1>管院小幫手</h1>
-            <p>管理學院線上服務平台</p>
-        </header>
 
-        <section class="auth-card" aria-label="帳號登入與註冊">
-            <div id="loginPage">
-                <h2>歡迎回來</h2>
-                <p class="card-description">登入帳號，繼續使用管院小幫手。</p>
+    <nav class="navbar">
+        <a href="index.html" class="brand">管院小幫手</a>
+        <div class="nav-right" id="nav-auth-area"></div>
+    </nav>
 
-                <div class="field">
-                    <label for="login_username">帳號</label>
-                    <input type="text" id="login_username" name="username" autocomplete="username" placeholder="請輸入帳號">
+    <main class="container">
+        <div class="header-text">
+            <h1>管理學院整合服務平台</h1>
+            <p>請選擇下方功能模組（進入模組前需先完成帳號登入）</p>
+        </div>
+
+        <div class="grid">
+            <div class="card">
+                <div>
+                    <span class="card-tag">MODULE 01 · 空間導覽</span>
+                    <h2>管院空間與設備查詢</h2>
+                    <p>瀏覽各樓層平面圖、教室容納人數、投影與電腦設備清單及 360 度環景照片。</p>
                 </div>
-                <div class="field">
-                    <label for="login_password">密碼</label>
-                    <input type="password" id="login_password" name="password" autocomplete="current-password" placeholder="請輸入密碼">
-                </div>
-
-                <div class="actions">
-                    <button class="button button-primary" type="button" onclick="login()">登入</button>
-                    <button class="button button-secondary" type="button" onclick="showRegister()">建立新帳號</button>
-                </div>
-
-                <a class="guest-link" href="spaces.html">不登入，直接瀏覽管院空間資訊 →</a>
+                <button class="btn-enter" onclick="enterModule('spaces.html')">進入空間查詢 →</button>
             </div>
 
-            <div id="registerPage" style="display:none">
-                <h2>建立帳號</h2>
-                <p class="card-description">填寫以下資料，送出後需經管理員審核開通。</p>
-
-                <div class="field">
-                    <label for="register_username">帳號</label>
-                    <input type="text" id="register_username" name="register_username" autocomplete="username" placeholder="請設定帳號">
+            <div class="card">
+                <div>
+                    <span class="card-tag">MODULE 02 · 預約申請</span>
+                    <h2>空間與物品預約借用</h2>
+                    <p>線上申請借用研討室、教室鑰匙、無線投影筆與筆記型電腦，即時追蹤審核進度。</p>
                 </div>
-                <div class="field">
-                    <label for="register_email">電子郵件</label>
-                    <input type="email" id="register_email" name="email" autocomplete="email" placeholder="name@example.com">
-                </div>
-                <div class="field">
-                    <label for="register_role">申請身分</label>
-                    <select id="register_role">
-                        <option value="3">學生 / 一般使用者</option>
-                        <option value="2">教師（需排課功能）</option>
-                    </select>
-                </div>
-                <div class="field">
-                    <label for="register_password">密碼</label>
-                    <input type="password" id="register_password" name="register_password" autocomplete="new-password" placeholder="請設定密碼">
-                </div>
-
-                <div class="actions">
-                    <button class="button button-primary" type="button" onclick="register()">送出註冊申請</button>
-                    <button class="button button-secondary" type="button" onclick="showLogin()">返回登入</button>
-                </div>
+                <button class="btn-enter" onclick="enterModule('bookings.html')">進入借用系統 →</button>
             </div>
-        </section>
-        <p class="footer-note">管理學院 · 專屬服務入口</p>
+
+            <div class="card">
+                <div>
+                    <span class="card-tag">MODULE 03 · 課程排程</span>
+                    <h2>課程時間與志願排課</h2>
+                    <p>查詢各教室學期課表使用時段；教師可登記排課志願時段並由管理員協調排定。</p>
+                </div>
+                <button class="btn-enter" onclick="enterModule('courses.html')">進入排課系統 →</button>
+            </div>
+
+            <div class="card hidden" id="admin-card">
+                <div>
+                    <span class="card-tag">ADMIN · 系統管理</span>
+                    <h2>帳號審核與權限管理</h2>
+                    <p>審核新註冊的使用者帳號申請、指派教師或管理員角色權限，維護系統資料安全。</p>
+                </div>
+                <button class="btn-enter btn-admin" onclick="enterModule('admin_users.html')">進入帳號管理 →</button>
+            </div>
+        </div>
     </main>
 
+    <footer>管理學院 · 專屬服務入口</footer>
+
     <script>
-        const API_BASE = "http://127.0.0.1:5000/api";
+        const userData = JSON.parse(localStorage.getItem('user') || 'null');
+        const navAuthArea = document.getElementById('nav-auth-area');
 
-        function showRegister() {
-            document.getElementById("loginPage").style.display = "none";
-            document.getElementById("registerPage").style.display = "block";
-        }
-
-        function showLogin() {
-            document.getElementById("registerPage").style.display = "none";
-            document.getElementById("loginPage").style.display = "block";
-        }
-
-        async function register() {
-            const usernameInput = document.getElementById("register_username");
-            const emailInput = document.getElementById("register_email");
-            const roleSelect = document.getElementById("register_role");
-            const passwordInput = document.getElementById("register_password");
-            const submitBtn = document.querySelector("#registerPage .button-primary");
-
-            const payload = {
-                username: usernameInput.value.trim(),
-                email: emailInput.value.trim(),
-                role_id: parseInt(roleSelect.value, 10),
-                password: passwordInput.value
-            };
-
-            if (!payload.username || !payload.email || !payload.password) {
-                alert("請完整填寫帳號、電子郵件與密碼");
-                return;
+        if (userData) {
+            const roleName = userData.role || (userData.role_id === 1 ? 'Admin' : userData.role_id === 2 ? 'Teacher' : 'User');
+            navAuthArea.innerHTML = `
+                <span>您好，<strong>${userData.username}</strong></span>
+                <span class="role-badge">${roleName}</span>
+                <button class="btn-logout" onclick="logout()">登出</button>
+            `;
+            if (roleName === 'Admin' || userData.role_id === 1) {
+                document.getElementById('admin-card').classList.remove('hidden');
             }
+        } else {
+            navAuthArea.innerHTML = `
+                <a href="login.html" class="btn-nav">登入 / 註冊</a>
+            `;
+        }
 
-            submitBtn.disabled = true;
-            try {
-                const response = await fetch(`${API_BASE}/register`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(payload)
-                });
-
-                const data = await response.json();
-                alert(data.message || (response.ok ? "註冊成功" : "註冊失敗"));
-
-                if (response.ok) {
-                    usernameInput.value = "";
-                    emailInput.value = "";
-                    passwordInput.value = "";
-                    showLogin();
-                }
-            } catch (error) {
-                console.error("註冊請求失敗：", error);
-                alert("無法連線至後端伺服器，請確認 Flask 是否正在執行");
-            } finally {
-                submitBtn.disabled = false;
+        function enterModule(targetPage) {
+            const currentUser = JSON.parse(localStorage.getItem('user') || 'null');
+            if (currentUser) {
+                window.location.href = targetPage;
+            } else {
+                window.location.href = `login.html?redirect=${encodeURIComponent(targetPage)}`;
             }
         }
 
-        async function login() {
-            const usernameInput = document.getElementById("login_username");
-            const passwordInput = document.getElementById("login_password");
-            const loginBtn = document.querySelector("#loginPage .button-primary");
-
-            const payload = {
-                username: usernameInput.value.trim(),
-                password: passwordInput.value
-            };
-
-            if (!payload.username || !payload.password) {
-                alert("請輸入帳號與密碼");
-                return;
-            }
-
-            loginBtn.disabled = true;
-            try {
-                const response = await fetch(`${API_BASE}/login`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(payload)
-                });
-
-                const data = await response.json();
-                alert(data.message || (response.ok ? "登入成功" : "登入失敗"));
-
-                if (response.ok && data.user) {
-                    localStorage.setItem("currentUser", JSON.stringify(data.user));
-                    // 登入成功後導向空間查詢主頁（或依身分導向）
-                    window.location.href = "spaces.html";
-                }
-            } catch (error) {
-                console.error("登入請求失敗：", error);
-                alert("無法連線至後端伺服器，請確認 Flask 是否正在執行");
-            } finally {
-                loginBtn.disabled = false;
-            }
+        function logout() {
+            localStorage.removeItem('user');
+            window.location.reload();
         }
     </script>
 </body>

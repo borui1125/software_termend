@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>帳號登入 - 管院小幫手</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="auth-wrapper">
+        <div class="auth-card">
+            <!-- 登入區塊 -->
+            <div id="login-section">
+                <h1>歡迎回來</h1>
+                <p class="subtitle" id="login-hint">登入帳號，繼續使用管院小幫手。</p>
+
+                <form id="login-form">
+                    <div class="form-group">
+                        <label for="login-username">帳號</label>
+                        <input type="text" id="login-username" placeholder="請輸入帳號" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">密碼</label>
+                        <input type="password" id="login-password" placeholder="請輸入密碼" required>
+                    </div>
+                    <button type="submit" class="btn-primary">登入</button>
+                </form>
+
+                <button type="button" class="btn-secondary" onclick="toggleMode('register')">建立新帳號</button>
+            </div>
+
+            <!-- 註冊區塊 -->
+            <div id="register-section" class="hidden">
+                <h1>建立新帳號</h1>
+                <p class="subtitle">註冊後需經管理員審核開通方可使用。</p>
+
+                <form id="register-form">
+                    <div class="form-group">
+                        <label for="reg-username">帳號</label>
+                        <input type="text" id="reg-username" placeholder="請設定登入帳號" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-email">學校信箱</label>
+                        <input type="email" id="reg-email" placeholder="example@mail.ncnu.edu.tw" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-password">密碼</label>
+                        <input type="password" id="reg-password" placeholder="請設定密碼" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-role">申請身分</label>
+                        <select id="reg-role">
+                            <option value="3">學生 / 一般使用者 (User)</option>
+                            <option value="2">授課教師 (Teacher)</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn-primary">送出註冊申請</button>
+                </form>
+
+                <button type="button" class="btn-secondary" onclick="toggleMode('login')">返回登入</button>
+            </div>
+
+            <a href="index.html" class="back-link">← 返回服務總覽首頁</a>
+        </div>
+    </div>
+
+    <footer>管理學院 · 專屬服務入口</footer>
+
+    <script>
+        const API_BASE = 'http://127.0.0.1:5000/api';
+        const urlParams = new URLSearchParams(window.location.search);
+        const redirectTarget = urlParams.get('redirect');
+
+        const moduleNames = {
+            'spaces.html': '管院空間與設備查詢',
+            'bookings.html': '空間與物品預約借用',
+            'courses.html': '課程時間與志願排課',
+            'admin_users.html': '帳號審核與權限管理'
+        };
+
+        if (redirectTarget && moduleNames[redirectTarget]) {
+            document.getElementById('login-hint').textContent = `請先登入帳號，以進入「${moduleNames[redirectTarget]}」。`;
+        }
+
+        function toggleMode(mode) {
+            if (mode === 'register') {
+                document.getElementById('login-section').classList.add('hidden');
+                document.getElementById('register-section').classList.remove('hidden');
+            } else {
+                document.getElementById('register-section').classList.add('hidden');
+                document.getElementById('login-section').classList.remove('hidden');
+            }
+        }
+
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('login-username').value.trim();
+            const password = document.getElementById('login-password').value;
+
+            try {
+                const res = await fetch(`${API_BASE}/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                const data = await res.json();
+
+                if (!res.ok) {
+                    alert(data.error || data.message || '登入失敗');
+                    return;
+                }
+
+                localStorage.setItem('user', JSON.stringify(data.user));
+                alert('登入成功！');
+                window.location.href = redirectTarget || 'index.html';
+            } catch (err) {
+                alert('無法連線至後端伺服器，請確認 Flask 是否已啟動。');
+            }
+        });
+
+        document.getElementById('register-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('reg-username').value.trim();
+            const email = document.getElementById('reg-email').value.trim();
+            const password = document.getElementById('reg-password').value;
+            const role_id = parseInt(document.getElementById('reg-role').value, 10);
+
+            try {
+                const res = await fetch(`${API_BASE}/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, email, password, role_id })
+                });
+                const data = await res.json();
+
+                if (!res.ok) {
+                    alert(data.error || data.message || '註冊失敗');
+                    return;
+                }
+
+                alert(data.message || '註冊成功！請靜待管理員審核後登入。');
+                document.getElementById('register-form').reset();
+                toggleMode('login');
+            } catch (err) {
+                alert('無法連線至後端伺服器，請確認 Flask 是否已啟動。');
+            }
+        });
+    </script>
+</body>
+</html>

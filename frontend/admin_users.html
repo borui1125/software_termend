@@ -1,97 +1,322 @@
-<!doctype html>
-<html lang="zh-Hant">
+<!DOCTYPE html>
+<html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <title>帳號審核管理 - 管院小幫手</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>帳號審核與權限管理 - 管院小幫手</title>
+    <link rel="stylesheet" href="style.css">
     <style>
-        body { font-family: "Noto Sans TC", sans-serif; margin: 0; background: #f3f6fb; color: #17283e; }
-        .container { max-width: 960px; margin: 0 auto; padding: 0 20px 40px; }
-        .card { background: #fff; padding: 24px; border-radius: 14px; box-shadow: 0 6px 20px rgba(0,0,0,0.06); }
-        table { width: 100%; border-collapse: collapse; margin-top: 16px; }
-        th, td { padding: 12px; border-bottom: 1px solid #e2e8f0; text-align: left; font-size: 14px; }
-        th { background: #f8fafc; color: #475569; }
-        .badge { padding: 4px 10px; border-radius: 99px; font-size: 12px; font-weight: 600; }
-        .pending { background: #fef3c7; color: #b45309; }
-        .approved { background: #dcfce7; color: #15803d; }
-        .rejected { background: #fee2e2; color: #b91c1c; }
-        button { padding: 6px 12px; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; margin-right: 4px; }
-        .btn-approve { background: #16a34a; color: #fff; }
-        .btn-reject { background: #dc2626; color: #fff; }
+        /* 管理員頁面專屬微調（延續全站莫蘭迪灰藍色系） */
+        .filter-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .filter-btn {
+            background: rgba(255, 255, 255, 0.75);
+            border: 1px solid var(--color-sage-grey);
+            color: var(--text-muted);
+            padding: 8px 16px;
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .filter-btn:hover {
+            background: #ffffff;
+            color: var(--color-primary);
+            border-color: var(--color-mid);
+        }
+        .filter-btn.active {
+            background: var(--color-primary);
+            color: #ffffff;
+            border-color: var(--color-primary);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .status-pending {
+            background: #eef2f4;
+            color: var(--color-primary);
+            border: 1px solid var(--color-mist-blue);
+        }
+        .status-approved {
+            background: #e3ece9;
+            color: #4a6b62;
+            border: 1px solid #bfd1cb;
+        }
+        .status-rejected {
+            background: #f2e8e8;
+            color: #8c5a5a;
+            border: 1px solid #dec7c7;
+        }
+
+        .role-select {
+            padding: 6px 10px;
+            border: 1px solid var(--color-sage-grey);
+            border-radius: 8px;
+            font-size: 13px;
+            color: var(--text-main);
+            background: #fafbfc;
+            outline: none;
+        }
+        .role-select:focus {
+            border-color: var(--color-primary);
+        }
+
+        .action-group {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .btn-sm {
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            transition: background 0.2s;
+        }
+        .btn-approve {
+            background: var(--color-primary);
+            color: #ffffff;
+        }
+        .btn-approve:hover {
+            background: var(--color-primary-dark);
+        }
+        .btn-reject {
+            background: var(--color-secondary);
+            color: #ffffff;
+        }
+        .btn-reject:hover {
+            background: var(--color-primary);
+        }
+        .btn-delete {
+            background: transparent;
+            border: 1px solid var(--color-mid);
+            color: var(--text-muted);
+        }
+        .btn-delete:hover {
+            background: #f2e8e8;
+            border-color: #dec7c7;
+            color: #8c5a5a;
+        }
+        .self-tag {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+        .empty-row {
+            text-align: center;
+            color: var(--text-muted);
+            padding: 32px !important;
+        }
     </style>
 </head>
 <body>
-    <div id="navbar"></div>
+
+    <nav class="navbar">
+        <a href="index.html" class="brand">管院小幫手</a>
+        <div class="nav-right">
+            <span id="welcome-text">載入中...</span>
+            <span class="role-badge">Admin</span>
+            <a href="index.html" class="btn-logout" style="text-decoration: none;">← 返回服務總覽</a>
+            <button class="btn-logout" onclick="logout()">登出</button>
+        </div>
+    </nav>
+
     <main class="container">
-        <div class="card">
-            <h2>帳號註冊審核與權限管理</h2>
+        <div class="header-text">
+            <h1>帳號審核與權限管理</h1>
+            <p>審核新註冊的使用者申請，並指派系統角色權限（Admin / Teacher / User）</p>
+        </div>
+
+        <!-- 狀態篩選列 -->
+        <div class="filter-bar">
+            <button class="filter-btn active" onclick="setFilter('all', this)">全部帳號</button>
+            <button class="filter-btn" onclick="setFilter('pending', this)">待審核 (Pending)</button>
+            <button class="filter-btn" onclick="setFilter('approved', this)">已通過 (Approved)</button>
+            <button class="filter-btn" onclick="setFilter('rejected', this)">已退件 (Rejected)</button>
+        </div>
+
+        <!-- 使用者資料表 -->
+        <div class="table-box">
             <table>
                 <thead>
                     <tr>
                         <th>ID</th>
                         <th>帳號</th>
-                        <th>信箱</th>
-                        <th>角色</th>
+                        <th>學校信箱</th>
+                        <th>指派角色</th>
                         <th>審核狀態</th>
-                        <th>操作</th>
+                        <th>管理操作</th>
                     </tr>
                 </thead>
-                <tbody id="userTableBody"></tbody>
+                <tbody id="users-tbody">
+                    <tr>
+                        <td colspan="6" class="empty-row">資料載入中...</td>
+                    </tr>
+                </tbody>
             </table>
         </div>
     </main>
 
-    <script src="js/common.js"></script>
+    <footer>管理學院 · 專屬服務入口</footer>
+
     <script>
-        const currentUser = requireLogin();
-        if (currentUser && currentUser.role_name !== "Admin") {
-            alert("僅管理員可進入此頁面");
-            window.location.href = "spaces.html";
+        const API_BASE = 'http://127.0.0.1:5000/api';
+        const currentUser = JSON.parse(localStorage.getItem('user') || 'null');
+
+        // 1. 權限檢查：未登入或非 Admin 導回對應頁面
+        if (!currentUser) {
+            alert('請先登入系統');
+            window.location.href = 'login.html?redirect=admin_users.html';
+        } else if (currentUser.role !== 'Admin' && currentUser.role_id !== 1) {
+            alert('權限不足，僅限管理員進入此頁面');
+            window.location.href = 'index.html';
+        } else {
+            document.getElementById('welcome-text').innerHTML = `您好，<strong>${currentUser.username}</strong>`;
         }
-        renderNavbar("admin_users");
 
-        async function loadUsers() {
-            const res = await fetch(`${API_BASE}/admin/users`);
-            const data = await res.json();
-            const tbody = document.getElementById("userTableBody");
-            tbody.innerHTML = "";
+        let allUsers = [];
+        let currentFilter = 'all';
 
-            (data.users || []).forEach(u => {
-                const statusText = { pending: "待審核", approved: "已通過", rejected: "已退件" }[u.status] || u.status;
-                tbody.innerHTML += `
+        // 2. 載入所有使用者清單
+        async function fetchUsers() {
+            try {
+                const res = await fetch(`${API_BASE}/users`);
+                const data = await res.json();
+
+                if (!res.ok) {
+                    alert(data.error || '無法取得使用者清單');
+                    return;
+                }
+
+                allUsers = Array.isArray(data) ? data : (data.users || []);
+                renderTable();
+            } catch (err) {
+                document.getElementById('users-tbody').innerHTML =
+                    '<tr><td colspan="6" class="empty-row">無法連線至後端伺服器，請確認 Flask 是否已啟動。</td></tr>';
+            }
+        }
+
+        function setFilter(status, btnEl) {
+            currentFilter = status;
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            btnEl.classList.add('active');
+            renderTable();
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('users-tbody');
+            const filtered = currentFilter === 'all'
+                ? allUsers
+                : allUsers.filter(u => u.status === currentFilter);
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="empty-row">目前沒有符合條件的帳號資料</td></tr>';
+                return;
+            }
+
+            const statusLabels = {
+                pending: '<span class="status-badge status-pending">待審核</span>',
+                approved: '<span class="status-badge status-approved">已通過</span>',
+                rejected: '<span class="status-badge status-rejected">已退件</span>'
+            };
+
+            tbody.innerHTML = filtered.map(u => {
+                const isSelf = u.id === currentUser.id || u.username === currentUser.username;
+                const roleId = Number(u.role_id) || (u.role === 'Admin' ? 1 : u.role === 'Teacher' ? 2 : 3);
+
+                return `
                     <tr>
-                        <td>${u.user_id}</td>
-                        <td>${u.username}</td>
+                        <td>${u.id}</td>
+                        <td><strong>${u.username}</strong></td>
                         <td>${u.email}</td>
                         <td>
-                            <select id="role_${u.user_id}">
-                                <option value="1" ${u.role_id === 1 ? "selected" : ""}>Admin</option>
-                                <option value="2" ${u.role_id === 2 ? "selected" : ""}>Teacher</option>
-                                <option value="3" ${u.role_id === 3 ? "selected" : ""}>User</option>
+                            <select class="role-select" ${isSelf ? 'disabled' : ''}
+                                onchange="updateUser(${u.id}, '${u.status}', this.value)">
+                                <option value="1" ${roleId === 1 ? 'selected' : ''}>Admin (管理員)</option>
+                                <option value="2" ${roleId === 2 ? 'selected' : ''}>Teacher (教師)</option>
+                                <option value="3" ${roleId === 3 ? 'selected' : ''}>User (學生/一般)</option>
                             </select>
                         </td>
-                        <td><span class="badge ${u.status}">${statusText}</span></td>
+                        <td>${statusLabels[u.status] || u.status}</td>
                         <td>
-                            <button class="btn-approve" onclick="reviewUser(${u.user_id}, 'approved')">通過</button>
-                            <button class="btn-reject" onclick="reviewUser(${u.user_id}, 'rejected')">退件</button>
+                            ${isSelf
+                                ? '<span class="self-tag">目前登入帳號</span>'
+                                : `<div class="action-group">
+                                    <button class="btn-sm btn-approve" onclick="updateUser(${u.id}, 'approved', ${roleId})">通過</button>
+                                    <button class="btn-sm btn-reject" onclick="updateUser(${u.id}, 'rejected', ${roleId})">退件</button>
+                                    <button class="btn-sm btn-delete" onclick="deleteUser(${u.id}, '${u.username}')">刪除</button>
+                                   </div>`
+                            }
                         </td>
                     </tr>
                 `;
-            });
+            }).join('');
         }
 
-        async function reviewUser(userId, status) {
-            const roleId = document.getElementById(`role_${userId}`).value;
-            const res = await fetch(`${API_BASE}/admin/users/${userId}/review`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ status, role_id: parseInt(roleId, 10) })
-            });
-            const data = await res.json();
-            alert(data.message);
-            loadUsers();
+        // 3. 更新帳號審核狀態或角色權限
+        async function updateUser(userId, newStatus, newRoleId) {
+            try {
+                const res = await fetch(`${API_BASE}/users/${userId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        status: newStatus,
+                        role_id: Number(newRoleId)
+                    })
+                });
+                const data = await res.json();
+
+                if (!res.ok) {
+                    alert(data.error || data.message || '更新失敗');
+                    return;
+                }
+
+                fetchUsers();
+            } catch (err) {
+                alert('伺服器連線異常，更新失敗');
+            }
         }
 
-        loadUsers();
+        // 4. 刪除帳號
+        async function deleteUser(userId, username) {
+            if (!confirm(`確定要永久刪除帳號「${username}」嗎？此操作無法復原。`)) return;
+
+            try {
+                const res = await fetch(`${API_BASE}/users/${userId}`, {
+                    method: 'DELETE'
+                });
+                const data = await res.json();
+
+                if (!res.ok) {
+                    alert(data.error || data.message || '刪除失敗');
+                    return;
+                }
+
+                fetchUsers();
+            } catch (err) {
+                alert('伺服器連線異常，刪除失敗');
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('user');
+            window.location.href = 'index.html';
+        }
+
+        // 初始化載入資料
+        fetchUsers();
     </script>
 </body>
 </html>
