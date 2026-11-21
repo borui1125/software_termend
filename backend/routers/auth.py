@@ -37,7 +37,7 @@ def register():
         cursor.execute(
             """
             INSERT INTO users (username, email, password, role_id, status)
-            VALUES (%s, %s, %s, %s, 'pending')
+            VALUES (%s, %s, %s, %s, 'approved')
             RETURNING id, username, email, role_id, status
             """,
             (username, email, password_hash, role_id),
@@ -45,13 +45,16 @@ def register():
         created_user = cursor.fetchone()
         conn.commit()
 
+        role_names = {1: "Admin", 2: "Teacher", 3: "User"}
         return jsonify({
-            "message": "註冊申請已送出，請等待管理員審核通過後再登入",
+            "message": "註冊成功",
             "user": {
                 "user_id": created_user[0],
                 "username": created_user[1],
                 "email": created_user[2],
                 "role_id": created_user[3],
+                "role_name": role_names.get(created_user[3], "User"),
+                "role": role_names.get(created_user[3], "User"),
                 "status": created_user[4],
             },
         }), 201
@@ -109,12 +112,6 @@ def login():
         if not is_valid:
             return jsonify({"message": "帳號或密碼錯誤"}), 401
 
-        # 檢查帳號審核狀態
-        if status == "pending":
-            return jsonify({"message": "您的帳號尚在審核中，請聯繫管理員"}), 403
-        if status == "rejected":
-            return jsonify({"message": "您的帳號申請已被退件"}), 403
-
         return jsonify({
             "message": "登入成功",
             "user": {
@@ -123,6 +120,7 @@ def login():
                 "email": db_email,
                 "role_id": role_id,
                 "role_name": role_name,
+                "role": role_name,
                 "status": status,
             },
         }), 200
@@ -138,9 +136,10 @@ def login():
             conn.close()
 
 
+@auth_bp.route("/api/users", methods=["GET"])
 @auth_bp.route("/api/admin/users", methods=["GET"])
 def list_users():
-    """管理員取得所有帳號清單進行審核"""
+    """管理員取得所有帳號清單"""
     conn = None
     cursor = None
     try:
@@ -177,35 +176,49 @@ def list_users():
             conn.close()
 
 
-@auth_bp.route("/api/admin/users/<int:user_id>/review", methods=["PUT"])
-def review_user(user_id):
-    """管理員審核帳號（通過/退件）及調整角色"""
+@auth_bp.route("/api/users/<int:user_id>", methods=["PUT"])
+def update_user(user_id):
+    """調整帳號角色"""
     conn = None
     cursor = None
     try:
         data = request.get_json(silent=True) or {}
-        status = data.get("status")  # 'approved' 或 'rejected'
         role_id = data.get("role_id")
-
-        if status not in ("approved", "rejected", "pending"):
-            return jsonify({"message": "無效的審核狀態"}), 400
 
         conn = get_conn()
         cursor = conn.cursor()
 
-        if role_id:
-            cursor.execute(
-                "UPDATE users SET status = %s, role_id = %s WHERE id = %s",
-                (status, int(role_id), user_id),
-            )
-        else:
-            cursor.execute(
-                "UPDATE users SET status = %s WHERE id = %s",
-                (status, user_id),
-            )
+        if role_id not in (1, 2, 3, "1", "2", "3"):
+            return jsonify({"message": "無效的角色"}), 400
+
+        cursor.execute(
+            "UPDATE users SET role_id = %s, status = 'approved' WHERE id = %s",
+            (int(role_id), user_id),
+        )
 
         conn.commit()
-        return jsonify({"message": "帳號狀態已更新"}), 200
+        return jsonify({"message": "帳號角色已更新"}), 200
+    except Exception as e:
+        if conn:
+            conn.rollback()
+        return jsonify({"message": str(e)}), 500
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
+
+@auth_bp.route("/api/users/<int:user_id>", methods=["DELETE"])
+def delete_user(user_id):
+    conn = None
+    cursor = None
+    try:
+        conn = get_conn()
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM users WHERE id = %s", (user_id,))
+        conn.commit()
+        return jsonify({"message": "帳號已刪除"}), 200
     except Exception as e:
         if conn:
             conn.rollback()
