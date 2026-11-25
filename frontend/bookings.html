@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>空間與物品預約借用 - 國立暨南國際大學 管理學院</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            background: #f8fafb !important;
+            color: #2c353d;
+        }
+        .navbar {
+            background: #eef2f4 !important;
+            border-bottom: 1px solid #dce3e6 !important;
+            box-shadow: none !important;
+            padding: 14px 40px;
+        }
+        .brand-group {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            text-decoration: none;
+        }
+        .brand-logos {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .brand-logos img {
+            height: 36px;
+            width: auto;
+            object-fit: contain;
+        }
+        .brand-text {
+            display: flex;
+            flex-direction: column;
+        }
+        .brand-zh {
+            font-size: 15px;
+            font-weight: bold;
+            color: #2c353d;
+            letter-spacing: 1px;
+        }
+        .brand-en {
+            font-size: 11px;
+            color: #64727d;
+        }
+        .btn-nav-outline {
+            background: #ffffff;
+            border: 1px solid #cbd4d8;
+            color: #4a555e;
+            padding: 7px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: bold;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-nav-outline:hover {
+            border-color: #738493;
+            color: #738493;
+        }
+        .page-header {
+            margin-bottom: 28px;
+            padding-bottom: 18px;
+            border-bottom: 1px solid #e5eaed;
+        }
+        .module-eyebrow {
+            display: inline-block;
+            font-size: 12px;
+            font-weight: bold;
+            color: #738493;
+            letter-spacing: 0.8px;
+            margin-bottom: 6px;
+        }
+        .page-header h1 {
+            font-size: 28px;
+            font-weight: bold;
+            color: #2c353d;
+            margin-bottom: 6px;
+        }
+        .page-header p {
+            font-size: 15px;
+            color: #64727d;
+        }
+        .tab-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 28px;
+        }
+        .tab-btn {
+            background: #ffffff;
+            border: 1px solid #dce3e6;
+            color: #64727d;
+            padding: 9px 20px;
+            border-radius: 999px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .tab-btn:hover {
+            border-color: #8a9eab;
+            color: #2c353d;
+        }
+        .tab-btn.active {
+            background: #738493;
+            color: #ffffff;
+            border-color: #738493;
+        }
+        .two-col-grid {
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 28px;
+            align-items: start;
+        }
+        @media (max-width: 840px) {
+            .two-col-grid { grid-template-columns: 1fr; }
+            .navbar { padding: 14px 20px; }
+        }
+        .panel-card {
+            background: #ffffff;
+            border: 1px solid #e6ecee;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(44, 53, 61, 0.04);
+        }
+        .panel-card h2 {
+            font-size: 20px;
+            color: #2c353d;
+            margin-bottom: 6px;
+        }
+        .panel-sub {
+            font-size: 13px;
+            color: #64727d;
+            margin-bottom: 22px;
+        }
+        .dept-box {
+            margin-top: 8px;
+            font-size: 13px;
+            color: #526370;
+            background: #f3f6f8;
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid #e2e8ec;
+        }
+        .time-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+        .item-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 8px;
+        }
+        .item-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 14px;
+            background: #f8fafb;
+            border: 1px solid #e5eaed;
+            border-radius: 10px;
+        }
+        .item-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            color: #2c353d;
+        }
+        .item-left input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: #738493;
+            cursor: pointer;
+        }
+        .item-stock {
+            font-size: 12px;
+            color: #7a8792;
+        }
+        .item-qty {
+            width: 68px !important;
+            padding: 6px 8px !important;
+            text-align: center;
+            font-size: 13px !important;
+        }
+        .schedule-filter {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: flex-end;
+            margin-bottom: 20px;
+        }
+        .schedule-filter .form-group {
+            margin-bottom: 0;
+            flex: 1;
+            min-width: 170px;
+        }
+        .event-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .event-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 13px 16px;
+            border-radius: 12px;
+            background: #f8fafb;
+            border: 1px solid #e6ecee;
+            border-left: 4px solid #738493;
+        }
+        .event-item.is-course {
+            border-left-color: #8a9eab;
+            background: #f3f6f8;
+        }
+        .event-time {
+            font-size: 13px;
+            font-weight: bold;
+            color: #738493;
+        }
+        .event-title {
+            font-size: 14px;
+            font-weight: bold;
+            color: #2c353d;
+            margin-top: 3px;
+        }
+        .event-meta {
+            font-size: 12px;
+            color: #64727d;
+            margin-top: 2px;
+        }
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .badge-pending { background: #eef2f4; color: #738493; border: 1px solid #cbd4d8; }
+        .badge-approved { background: #e6efec; color: #47685f; border: 1px solid #c3d5cf; }
+        .badge-rejected { background: #f4eaea; color: #8c5a5a; border: 1px solid #e0caca; }
+        .badge-course { background: #e8eef2; color: #526370; }
+        .btn-sm {
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            transition: background 0.2s;
+        }
+        .btn-approve { background: #738493; color: #ffffff; }
+        .btn-approve:hover { background: #5c6b78; }
+        .btn-reject { background: #8a9eab; color: #ffffff; }
+        .btn-reject:hover { background: #738493; }
+        .btn-cancel {
+            background: #ffffff;
+            border: 1px solid #cbd4d8;
+            color: #64727d;
+        }
+        .btn-cancel:hover {
+            background: #f4eaea;
+            border-color: #e0caca;
+            color: #8c5a5a;
+        }
+        .handover-select {
+            padding: 6px 8px;
+            border: 1px solid #dce3e6;
+            border-radius: 8px;
+            font-size: 12px;
+            background: #ffffff;
+            color: #2c353d;
+        }
+        .table-box {
+            box-shadow: 0 4px 20px rgba(44, 53, 61, 0.04) !important;
+            border: 1px solid #e6ecee !important;
+        }
+        .empty-msg {
+            text-align: center;
+            color: #7a8792;
+            padding: 28px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <a href="index.html" class="brand-group">
+            <div class="brand-logos">
+                <img src="images/ncnu_logo.png" alt="國立暨南國際大學" onerror="this.style.display='none'">
+            </div>
+            <div class="brand-text">
+                <span class="brand-zh">國立暨南國際大學 · 管理學院</span>
+                <span class="brand-en">College of Management · 管院小幫手</span>
+            </div>
+        </a>
+        <div class="nav-right">
+            <span id="welcome-text">載入中...</span>
+            <span id="role-badge" class="role-badge">User</span>
+            <a href="index.html" class="btn-nav-outline">← 返回服務總覽</a>
+            <button class="btn-nav-outline" onclick="logout()">登出</button>
+        </div>
+    </nav>
+
+    <main class="container">
+        <div class="page-header">
+            <span class="module-eyebrow">MODULE 02 · 預約申請</span>
+            <h1>空間與物品預約借用</h1>
+            <p>線上申請借用研討室、教室鑰匙、無線投影筆與筆記型電腦，即時追蹤審核進度。</p>
+        </div>
+
+        <!-- 功能頁籤 -->
+        <div class="tab-bar">
+            <button class="tab-btn active" onclick="switchTab('apply', this)">線上預約與時段查詢</button>
+            <button class="tab-btn" onclick="switchTab('my', this)">我的借用紀錄</button>
+            <button class="tab-btn hidden" id="admin-tab-btn" onclick="switchTab('admin', this)">管理員審核與領用管理</button>
+        </div>
+
+        <!-- 分頁 1：線上預約申請 + 教室週曆時段檢查 -->
+        <section id="tab-apply" class="two-col-grid">
+            <div class="panel-card">
+                <h2>填寫借用申請單</h2>
+                <p class="panel-sub">系統將自動比對教室排課與現有預約，避免時段衝突</p>
+
+                <form id="booking-form">
+                    <div class="form-group">
+                        <label for="room-select">借用空間 / 教室</label>
+                        <select id="room-select" required>
+                            <option value="">載入教室清單中...</option>
+                        </select>
+                        <div id="room-dept-display" class="dept-box">管理單位：載入中...</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="booking-date">借用日期</label>
+                        <input type="date" id="booking-date" required>
+                    </div>
+
+                    <div class="time-row">
+                        <div class="form-group">
+                            <label for="start-time">開始時間</label>
+                            <input type="time" id="start-time" value="09:00" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="end-time">結束時間</label>
+                            <input type="time" id="end-time" value="12:00" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="purpose">借用事由</label>
+                        <input type="text" id="purpose" placeholder="例如：專題小組討論、系學會活動籌備" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>同時借用物品（選填，依所選教室顯示可借用項目）</label>
+                        <div class="item-list" id="items-container">
+                            <div class="empty-msg">載入物品清單中...</div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-primary">送出預約申請</button>
+                </form>
+            </div>
+
+            <div class="panel-card">
+                <h2>教室一週佔用狀況</h2>
+                <p class="panel-sub">同步顯示「已排定課程」與「已申請借用」時段</p>
+
+                <div class="schedule-filter">
+                    <div class="form-group">
+                        <label for="schedule-room">檢視教室</label>
+                        <select id="schedule-room" onchange="loadRoomSchedule()"></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="schedule-week-start">起始日期（一週）</label>
+                        <input type="date" id="schedule-week-start" onchange="loadRoomSchedule()">
+                    </div>
+                </div>
+
+                <div id="schedule-list" class="event-list">
+                    <div class="empty-msg">選擇教室以檢視一週時段...</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 分頁 2：我的借用紀錄 -->
+        <section id="tab-my" class="hidden">
+            <div class="table-box">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>申請編號</th>
+                            <th>借用教室</th>
+                            <th>管理單位</th>
+                            <th>借用日期與時段</th>
+                            <th>借用物品</th>
+                            <th>事由</th>
+                            <th>審核狀態 / 意見</th>
+                            <th>領用狀態</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="my-bookings-tbody">
+                        <tr><td colspan="9" class="empty-msg">載入紀錄中...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- 分頁 3：管理員審核與領用歸還 -->
+        <section id="tab-admin" class="hidden">
+            <div class="table-box">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>申請人</th>
+                            <th>借用教室</th>
+                            <th>管理單位</th>
+                            <th>借用日期與時段</th>
+                            <th>借用物品</th>
+                            <th>事由</th>
+                            <th>審核狀態</th>
+                            <th>審核操作</th>
+                            <th>鑰匙/器材領還</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-bookings-tbody">
+                        <tr><td colspan="9" class="empty-msg">載入全站申請中...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <footer>國立暨南國際大學 · 管理學院專屬服務入口</footer>
+
+    <script>
+        const API_BASE = 'http://127.0.0.1:5000/api';
+        const currentUser = JSON.parse(localStorage.getItem('user') || 'null');
+
+        if (!currentUser) {
+            window.location.href = 'login.html?redirect=bookings.html';
+        }
+
+        const roleName = currentUser.role || (currentUser.role_id === 1 ? 'Admin' : currentUser.role_id === 2 ? 'Teacher' : 'User');
+        const isAdmin = roleName === 'Admin' || currentUser.role_id === 1;
+
+        document.getElementById('welcome-text').innerHTML = `您好，<strong>${currentUser.username}</strong>`;
+        document.getElementById('role-badge').textContent = roleName;
+
+        if (isAdmin) {
+            document.getElementById('admin-tab-btn').classList.remove('hidden');
+        }
+
+        const today = new Date();
+        const formatDate = (d) => d.toISOString().split('T')[0];
+        document.getElementById('booking-date').value = formatDate(today);
+
+        const monday = new Date(today);
+        const day = monday.getDay();
+        const diff = monday.getDate() - day + (day === 0 ? -6 : 1);
+        monday.setDate(diff);
+        document.getElementById('schedule-week-start').value = formatDate(monday);
+
+        function switchTab(tabName, btnEl) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            btnEl.classList.add('active');
+
+            document.getElementById('tab-apply').classList.add('hidden');
+            document.getElementById('tab-my').classList.add('hidden');
+            document.getElementById('tab-admin').classList.add('hidden');
+
+            document.getElementById(`tab-${tabName}`).classList.remove('hidden');
+
+            if (tabName === 'my') loadMyBookings();
+            if (tabName === 'admin' && isAdmin) loadAdminBookings();
+        }
+
+        let allRoomsData = [];
+
+        function updateRoomDeptDisplay(roomId) {
+            const room = allRoomsData.find(r => String(r.id) === String(roomId));
+            const deptEl = document.getElementById('room-dept-display');
+            if (room && deptEl) {
+                deptEl.innerHTML = `管理單位：<strong>${room.department || '管理學院'}</strong>`;
+            }
+        }
+
+        async function loadItemsForRoom(roomId) {
+            const itemsContainer = document.getElementById('items-container');
+            if (!roomId) {
+                itemsContainer.innerHTML = '<div class="empty-msg">請先選擇教室</div>';
+                return;
+            }
+            try {
+                const res = await fetch(`${API_BASE}/items?room_id=${roomId}`);
+                const itemsData = await res.json();
+                const items = itemsData.items || [];
+
+                if (items.length === 0) {
+                    itemsContainer.innerHTML = '<div class="empty-msg">此教室無額外可借用物品</div>';
+                    return;
+                }
+
+                itemsContainer.innerHTML = items.map(item => `
+                    <div class="item-row">
+                        <label class="item-left">
+                            <input type="checkbox" class="item-check" data-id="${item.id}">
+                            <span>${item.name}</span>
+                            <span class="item-stock">(全院總庫存 ${item.total_quantity})</span>
+                        </label>
+                        <input type="number" class="item-qty" id="qty-${item.id}" min="1" max="${item.total_quantity}" value="1" disabled>
+                    </div>
+                `).join('');
+
+                document.querySelectorAll('.item-check').forEach(chk => {
+                    chk.addEventListener('change', (e) => {
+                        const qtyInput = document.getElementById(`qty-${e.target.dataset.id}`);
+                        qtyInput.disabled = !e.target.checked;
+                    });
+                });
+            } catch (err) {
+                itemsContainer.innerHTML = '<div class="empty-msg">載入物品失敗</div>';
+            }
+        }
+
+        async function initOptions() {
+            try {
+                const roomsRes = await fetch(`${API_BASE}/bookings/rooms`);
+                const roomsData = await roomsRes.json();
+                allRoomsData = roomsData.rooms || [];
+
+                const roomSelect = document.getElementById('room-select');
+                const scheduleRoomSelect = document.getElementById('schedule-room');
+
+                if (allRoomsData.length === 0) {
+                    roomSelect.innerHTML = '<option value="">目前無可借用教室</option>';
+                } else {
+                    const optionsHtml = allRoomsData.map(r =>
+                        `<option value="${r.id}">${r.name}（${r.capacity}人）</option>`
+                    ).join('');
+                    roomSelect.innerHTML = optionsHtml;
+                    scheduleRoomSelect.innerHTML = optionsHtml;
+
+                    updateRoomDeptDisplay(roomSelect.value);
+
+                    roomSelect.addEventListener('change', () => {
+                        scheduleRoomSelect.value = roomSelect.value;
+                        updateRoomDeptDisplay(roomSelect.value);
+                        loadRoomSchedule();
+                        loadItemsForRoom(roomSelect.value);
+                    });
+
+                    loadRoomSchedule();
+                    loadItemsForRoom(roomSelect.value);
+                }
+            } catch (err) {
+                alert('無法連線至後端伺服器，請確認 Flask 是否已啟動。');
+            }
+        }
+
+        async function loadRoomSchedule() {
+            const roomId = document.getElementById('schedule-room').value;
+            const startDate = document.getElementById('schedule-week-start').value;
+            if (!roomId || !startDate) return;
+
+            const startObj = new Date(startDate);
+            const endObj = new Date(startObj);
+            endObj.setDate(startObj.getDate() + 6);
+            const endDate = formatDate(endObj);
+
+            try {
+                const res = await fetch(`${API_BASE}/bookings/schedule?room_id=${roomId}&start_date=${startDate}&end_date=${endDate}`);
+                const data = await res.json();
+                const listEl = document.getElementById('schedule-list');
+                const events = data.events || [];
+
+                if (events.length === 0) {
+                    listEl.innerHTML = `<div class="empty-msg">${startDate} 至 ${endDate} 期間無課程或預約佔用，皆可申請！</div>`;
+                    return;
+                }
+
+                listEl.innerHTML = events.map(ev => {
+                    const isCourse = ev.source === 'course';
+                    const badgeHtml = isCourse
+                        ? '<span class="badge badge-course">正式排課</span>'
+                        : (ev.status === 'approved'
+                            ? '<span class="badge badge-approved">已核准借用</span>'
+                            : '<span class="badge badge-pending">審核中預約</span>');
+
+                    return `
+                        <div class="event-item ${isCourse ? 'is-course' : ''}">
+                            <div>
+                                <div class="event-time">${ev.date} &nbsp; ${ev.start_time} - ${ev.end_time}</div>
+                                <div class="event-title">${ev.title}</div>
+                                <div class="event-meta">登記人：${ev.owner}</div>
+                            </div>
+                            ${badgeHtml}
+                        </div>
+                    `;
+                }).join('');
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        document.getElementById('booking-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const room_id = parseInt(document.getElementById('room-select').value, 10);
+            const booking_date = document.getElementById('booking-date').value;
+            const start_time = document.getElementById('start-time').value;
+            const end_time = document.getElementById('end-time').value;
+            const purpose = document.getElementById('purpose').value.trim();
+
+            const items = [];
+            document.querySelectorAll('.item-check:checked').forEach(chk => {
+                const itemId = parseInt(chk.dataset.id, 10);
+                const quantity = parseInt(document.getElementById(`qty-${itemId}`).value, 10) || 1;
+                items.push({ item_id: itemId, quantity });
+            });
+
+            try {
+                const res = await fetch(`${API_BASE}/bookings`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        user_id: currentUser.id,
+                        room_id,
+                        booking_date,
+                        start_time,
+                        end_time,
+                        purpose,
+                        items
+                    })
+                });
+                const data = await res.json();
+
+                if (!res.ok) {
+                    alert(data.message || '申請失敗');
+                    return;
+                }
+
+                alert(data.message);
+                document.getElementById('purpose').value = '';
+                document.querySelectorAll('.item-check').forEach(chk => {
+                    chk.checked = false;
+                    document.getElementById(`qty-${chk.dataset.id}`).disabled = true;
+                });
+                loadRoomSchedule();
+            } catch (err) {
+                alert('伺服器連線異常，送出失敗');
+            }
+        });
+
+        const statusMap = {
+            pending: '<span class="badge badge-pending">待審核</span>',
+            approved: '<span class="badge badge-approved">已通過</span>',
+            rejected: '<span class="badge badge-rejected">已退件</span>'
+        };
+        const handoverMap = {
+            none: '未領用',
+            borrowed: '已借出使用中',
+            returned: '已歸還'
+        };
+
+        async function loadMyBookings() {
+            try {
+                const res = await fetch(`${API_BASE}/bookings?user_id=${currentUser.id}`);
+                const data = await res.json();
+                const tbody = document.getElementById('my-bookings-tbody');
+                const bookings = data.bookings || [];
+
+                if (bookings.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="9" class="empty-msg">您目前尚無任何借用申請紀錄</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = bookings.map(b => {
+                    const itemsText = b.items.length > 0
+                        ? b.items.map(i => `${i.name} ×${i.quantity}`).join('、')
+                        : '無';
+                    const commentHtml = b.admin_comment ? `<div style="font-size:12px; color:#64727d; margin-top:4px;">備註：${b.admin_comment}</div>` : '';
+
+                    return `
+                        <tr>
+                            <td>#${b.id}</td>
+                            <td><strong>${b.room_name}</strong></td>
+                            <td>${b.department || '管理學院'}</td>
+                            <td>${b.booking_date}<br><span style="font-size:12px; color:#64727d;">${b.start_time} - ${b.end_time}</span></td>
+                            <td>${itemsText}</td>
+                            <td>${b.purpose}</td>
+                            <td>${statusMap[b.status] || b.status}${commentHtml}</td>
+                            <td>${handoverMap[b.handover_status] || b.handover_status}</td>
+                            <td>
+                                ${b.status === 'pending'
+                                    ? `<button class="btn-sm btn-cancel" onclick="cancelBooking(${b.id})">取消申請</button>`
+                                    : '-'}
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function cancelBooking(bookingId) {
+            if (!confirm('確定要取消這筆借用申請嗎？')) return;
+            try {
+                const res = await fetch(`${API_BASE}/bookings/${bookingId}?user_id=${currentUser.id}`, {
+                    method: 'DELETE'
+                });
+                const data = await res.json();
+                if (!res.ok) {
+                    alert(data.message || '取消失敗');
+                    return;
+                }
+                loadMyBookings();
+            } catch (err) {
+                alert('連線異常');
+            }
+        }
+
+        async function loadAdminBookings() {
+            try {
+                const res = await fetch(`${API_BASE}/bookings`);
+                const data = await res.json();
+                const tbody = document.getElementById('admin-bookings-tbody');
+                const bookings = data.bookings || [];
+
+                if (bookings.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="9" class="empty-msg">目前全站尚無借用申請</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = bookings.map(b => {
+                    const itemsText = b.items.length > 0
+                        ? b.items.map(i => `${i.name} ×${i.quantity}`).join('、')
+                        : '無';
+                    const commentHtml = b.admin_comment ? `<div style="font-size:12px; color:#64727d; margin-top:4px;">意見：${b.admin_comment}</div>` : '';
+
+                    return `
+                        <tr>
+                            <td><strong>${b.username}</strong></td>
+                            <td><strong>${b.room_name}</strong></td>
+                            <td>${b.department || '管理學院'}</td>
+                            <td>${b.booking_date}<br><span style="font-size:12px; color:#64727d;">${b.start_time} - ${b.end_time}</span></td>
+                            <td>${itemsText}</td>
+                            <td>${b.purpose}</td>
+                            <td>${statusMap[b.status] || b.status}${commentHtml}</td>
+                            <td>
+                                <div style="display:flex; gap:6px;">
+                                    <button class="btn-sm btn-approve" onclick="reviewBooking(${b.id}, 'approved')">通過</button>
+                                    <button class="btn-sm btn-reject" onclick="reviewBooking(${b.id}, 'rejected')">退件</button>
+                                </div>
+                            </td>
+                            <td>
+                                <select class="handover-select" ${b.status !== 'approved' ? 'disabled' : ''}
+                                    onchange="updateHandover(${b.id}, this.value)">
+                                    <option value="none" ${b.handover_status === 'none' ? 'selected' : ''}>未領用</option>
+                                    <option value="borrowed" ${b.handover_status === 'borrowed' ? 'selected' : ''}>已借出</option>
+                                    <option value="returned" ${b.handover_status === 'returned' ? 'selected' : ''}>已歸還</option>
+                                </select>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function reviewBooking(bookingId, status) {
+            const label = status === 'approved' ? '通過' : '退件';
+            const comment = prompt(`請輸入「${label}」的審核備註（可直接按確定略過）：`, '');
+            if (comment === null) return;
+
+            try {
+                const res = await fetch(`${API_BASE}/bookings/${bookingId}/review`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status, admin_comment: comment })
+                });
+                const data = await res.json();
+                if (!res.ok) {
+                    alert(data.message || '審核更新失敗');
+                    return;
+                }
+                loadAdminBookings();
+            } catch (err) {
+                alert('連線異常');
+            }
+        }
+
+        async function updateHandover(bookingId, handoverStatus) {
+            try {
+                const res = await fetch(`${API_BASE}/bookings/${bookingId}/handover`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ handover_status: handoverStatus })
+                });
+                const data = await res.json();
+                if (!res.ok) {
+                    alert(data.message || '更新失敗');
+                    return;
+                }
+                loadAdminBookings();
+            } catch (err) {
+                alert('連線異常');
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('user');
+            window.location.href = 'index.html';
+        }
+
+        initOptions();
+    </script>
+</body>
+</html>
