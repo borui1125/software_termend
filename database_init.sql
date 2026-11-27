@@ -36,44 +36,110 @@ ON CONFLICT (username) DO NOTHING;
 -- ==========================================
 CREATE TABLE IF NOT EXISTS rooms (
     id SERIAL PRIMARY KEY,
-    room_code VARCHAR(30) UNIQUE NOT NULL,       -- 例如：管201、管305
-    name VARCHAR(100) NOT NULL,                  -- 例如：個案研討室、電腦教室
-    floor VARCHAR(20),                           -- 例如：2F、3F
+    room_code VARCHAR(50) UNIQUE NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    department VARCHAR(100) DEFAULT '管理學院',    -- 管理單位
+    floor VARCHAR(20),
     capacity INTEGER DEFAULT 0,                  -- 容納人數
-    equipment TEXT,                              -- 基本設備說明（單槍、白板等）
+    equipment TEXT,                              -- 基本設備說明
     description TEXT,                            -- 教室詳細介紹
-    panorama_url TEXT,                           -- 360 全景照片路徑或網址 (Pannellum)
+    panorama_url TEXT,                           -- 360 全景照片路徑或網址
     floor_plan_image TEXT,                       -- 對應樓層平面圖路徑
     map_x NUMERIC(5, 2),                         -- 教室在平面圖上的 X 座標百分比 (0~100)
     map_y NUMERIC(5, 2),                         -- 教室在平面圖上的 Y 座標百分比 (0~100)
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- 預設管院測試教室資料
-INSERT INTO rooms (room_code, name, floor, capacity, equipment, description, map_x, map_y)
+-- 相容舊版資料表：補上 department 欄位並放寬 room_code 長度限制
+ALTER TABLE rooms ADD COLUMN IF NOT EXISTS department VARCHAR(100) DEFAULT '管理學院';
+ALTER TABLE rooms ALTER COLUMN room_code TYPE VARCHAR(50);
+
+-- 自動清除早期測試資料，避免與正式教室清單重複
+DELETE FROM rooms WHERE room_code IN ('管201', '管302', '管405');
+
+-- 寫入管院 25 間真實教室資料
+INSERT INTO rooms (room_code, name, department, capacity, equipment, description, map_x, map_y)
 VALUES 
-    ('管201', '管院大型階梯教室', '2F', 120, '雙投影機、無線麥克風、講桌電腦', '適合大型演講與大班授課', 35.5, 42.0),
-    ('管302', '哈佛個案研討室', '3F', 60, '環形白板、電子講桌、視訊設備', 'U型階梯座位，適合分組討論', 62.0, 28.5),
-    ('管405', '資訊管理電腦教室', '4F', 55, '55台桌上型電腦、廣播教學系統', '配備完整資料分析與開發軟體', 48.0, 70.0)
-ON CONFLICT (room_code) DO NOTHING;
+    ('管206教室', '管206教室', '國企系', 40, '投影機、手動式布幕', '小型教室', 40.0, 55.0),
+    ('管207教室', '管207教室', '國企系', 40, '投影機、手動式布幕', '小型教室', 35.5, 42.0),
+    ('管350小型研討室', '管350小型研討室', '國企系', 20, '投影機、移動式白板', '適合專題小組討論與小型會議', 72.0, 38.0),
+    ('管432會議室', '管432會議室', '國企系', 20, '投影機、投影布幕、無線網路、有線網路、玻璃白板、冷氣與電扇', '小型會議室', 62.0, 28.5),
+    ('管213個案教室', '管213個案教室', '管理學院', 50, '投影幕、布幕、無線麥克風1支、擴大機', '小型教室', 25.0, 60.0),
+    ('管215個案教室', '管215個案教室', '管理學院', 100, '投影機、布幕2個、資訊講桌、無線麥克風2支', '大型教室', 48.0, 70.0),
+    ('管226巴菲特廳', '管226巴菲特廳', '管理學院', 80, '投影機、布幕、資訊講桌、無線麥克風1支、冷氣', '大型教室', 48.0, 70.0),
+    ('管228賈伯斯廳', '管228賈伯斯廳', '管理學院', 100, '投影機、布幕、資訊講桌、無線麥克風1支、冷氣、擴大機', '大型教室', 48.0, 70.0),
+    ('管241杜拉克廳', '管241杜拉克廳', '管理學院', 100, '投影機、布幕、資訊講桌、無線麥克風1支、冷氣', '大型教室', 48.0, 70.0),
+    ('管260大前研一廳', '管260大前研一廳', '管理學院', 120, '投影機、布幕、資訊講桌、無線麥克風1支、冷氣、白板', '大型教室', 48.0, 70.0),
+    ('管268史密斯廳', '管268史密斯廳', '管理學院', 270, '投影機、布幕、影音環控系統、擴大機、無線麥克風9支、白板2個、資訊講桌、冷氣', '大型教室', 48.0, 70.0),
+    ('管371寇斯廳', '管371寇斯廳', '管理學院', 250, '投影機、布幕、影音環控系統、擴大機、無線麥克風4支、白板1個、資訊講桌、冷氣', '大型教室', 48.0, 70.0),
+    ('管443第二會議室', '管443第二會議室', '管理學院', 60, '投影機、布幕、擴大機、無線麥克風1支、桌上額頸麥克風12座、冷氣', '大型會議室', 48.0, 70.0),
+    ('管427第三會議室', '管427第三會議室', '管理學院', 40, '投影機、布幕、冷氣', '小型會議室', 48.0, 70.0),
+    ('管B24教室', '管B24教室', '管理學院', 48, '', '小型教室', 48.0, 70.0),
+    ('管203教室', '管203教室', '資管系', 40, '投影機、手動式布幕', '小型教室', 48.0, 70.0),
+    ('管204教室', '管204教室', '資管系', 40, '投影機、手動式布幕', '小型教室', 48.0, 70.0),
+    ('管451小研討室', '管451小研討室', '資管系', 20, '投影機、移動式白板1個', '小型研討室', 48.0, 70.0),
+    ('管212教室', '管212教室', '財金系', 40, '投影機、手動式布幕', '小型教室', 48.0, 70.0),
+    ('管217小研討室', '管217小研討室', '財金系', 20, '投影機、移動式白板', '小型研討室', 48.0, 70.0),
+    ('管210教室', '管210教室', '經濟系', 40, '投影機、手動式布幕', '小型教室', 48.0, 70.0),
+    ('管329', '管329', '經濟系', 65, '投影機、布幕', '小型教室', 48.0, 70.0),
+    ('管320小研討室', '管320小研討室', '經濟系', 20, '投影機、移動式白板1個', '小型研討室', 48.0, 70.0),
+    ('管316小研討室', '管316小研討室', '經濟系', 10, '白板', '小型研討室', 48.0, 70.0),
+    ('管331', '管331', '觀光系', 130, '投影機、布幕、電腦', '大型教室', 48.0, 70.0)
+ON CONFLICT (room_code) DO UPDATE SET
+    name = EXCLUDED.name,
+    department = EXCLUDED.department,
+    capacity = EXCLUDED.capacity,
+    equipment = EXCLUDED.equipment,
+    description = EXCLUDED.description,
+    map_x = EXCLUDED.map_x,
+    map_y = EXCLUDED.map_y;
 
 -- ==========================================
--- 3. 模組二（空間/物品預約借用）：物品與借用紀錄表
+-- 3. 模組二（空間/物品預約借用）：物品、教室可借物品對照表與借用紀錄表
 -- ==========================================
 CREATE TABLE IF NOT EXISTS items (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(50) UNIQUE NOT NULL,            -- 例如：教室鑰匙、投影筆、筆電、延長線
+    name VARCHAR(50) UNIQUE NOT NULL,
     total_quantity INTEGER NOT NULL DEFAULT 1
 );
 
+-- 清除早期測試物品名稱，統一使用正式名稱
+DELETE FROM items WHERE name IN ('教室鑰匙', '無線投影筆', 'HDMI轉接頭');
+
+-- 寫入可借用物品與總庫存數量
 INSERT INTO items (name, total_quantity)
 VALUES 
-    ('教室鑰匙', 10),
-    ('無線投影筆', 5),
-    ('借用筆記型電腦', 3),
-    ('HDMI轉接頭', 8)
-ON CONFLICT (name) DO NOTHING;
+    ('教室鑰匙（含冷氣遙控器）', 15),
+    ('無線簡報投影筆', 6),
+    ('借用筆記型電腦', 4),
+    ('HDMI / Type-C 轉接頭', 10),
+    ('延長線（5公尺）', 6),
+    ('白板筆與板擦組', 12)
+ON CONFLICT (name) DO UPDATE SET
+    total_quantity = EXCLUDED.total_quantity;
 
+-- 教室與可借用物品對照表（設定每間教室分別能借哪些物品）
+CREATE TABLE IF NOT EXISTS room_items (
+    id SERIAL PRIMARY KEY,
+    room_id INTEGER NOT NULL REFERENCES rooms(id) ON DELETE CASCADE,
+    item_id INTEGER NOT NULL REFERENCES items(id) ON DELETE CASCADE,
+    UNIQUE (room_id, item_id)
+);
+
+-- 規則 A：所有教室都能借的通用物品
+INSERT INTO room_items (room_id, item_id)
+SELECT r.id, i.id FROM rooms r, items i
+WHERE i.name IN ('教室鑰匙（含冷氣遙控器）', '白板筆與板擦組')
+ON CONFLICT DO NOTHING;
+
+-- 規則 B：指定特定教室才能借的物品（可依實際管理規範自由增減）
+INSERT INTO room_items (room_id, item_id)
+SELECT r.id, i.id FROM rooms r, items i
+WHERE r.name IN ('管206教室', '管207教室', '管432會議室')
+  AND i.name IN ('延長線（5公尺）')
+ON CONFLICT DO NOTHING;
+
+-- 借用申請主表
 CREATE TABLE IF NOT EXISTS bookings (
     id SERIAL PRIMARY KEY,
     user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
