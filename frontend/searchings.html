@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管院空間與設備查詢 - 管院小幫手</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <a href="index.html" class="brand"><img src="photoes/1.png" alt="管院小幫手" class="brand-logo"></a>
+        <div class="nav-right" id="nav-auth-area"></div>
+    </nav>
+
+    <main class="container">
+        <div class="header-text">
+            <span class="card-tag">MODULE 01 · 空間導覽</span>
+            <h1>管院空間與設備查詢</h1>
+            <p>瀏覽各樓層平面圖、教室容納人數、設備資訊與 360 度環景照片。</p>
+        </div>
+
+        <section class="grid" aria-label="空間導覽功能">
+            <article class="card">
+                <div>
+                    <h2>樓層與教室</h2>
+                    <p>查詢管理學院各樓層空間與教室資訊。</p>
+                </div>
+            </article>
+            <article class="card">
+                <div>
+                    <h2>設備資訊</h2>
+                    <p>查看教室容納人數及投影、電腦等設備清單。</p>
+                </div>
+            </article>
+            <article class="card">
+                <div>
+                    <h2>360 度環景</h2>
+                    <p>瀏覽空間環景照片，先行了解場地環境。</p>
+                </div>
+            </article>
+        </section>
+    </main>
+
+    <footer>管理學院 · 專屬服務入口</footer>
+
+    <script>
+        const userData = JSON.parse(localStorage.getItem('user') || 'null');
+        const navAuthArea = document.getElementById('nav-auth-area');
+
+        if (userData) {
+            const roleName = userData.role || (userData.role_id === 1 ? 'Admin' : userData.role_id === 2 ? 'Teacher' : 'User');
+            navAuthArea.innerHTML = `
+                <span>您好，<strong>${userData.username}</strong></span>
+                <span class="role-badge">${roleName}</span>
+                <button class="btn-logout" onclick="logout()">登出</button>
+            `;
+        } else {
+            navAuthArea.innerHTML = `
+                <a href="login.html" class="btn-nav">登入 / 註冊</a>
+            `;
+        }
+
+        function logout() {
+            localStorage.removeItem('user');
+            window.location.reload();
+        }
+    </script>
+</body>
+</html>
