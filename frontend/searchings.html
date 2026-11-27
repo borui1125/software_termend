@@ -6,7 +6,7 @@
     <title>管院空間與設備查詢 - 管院小幫手</title>
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="spatial-dashboard">
     <nav class="navbar">
         <a href="index.html" class="brand"><img src="photoes/1.png" alt="管院小幫手" class="brand-logo"></a>
         <div class="nav-right" id="nav-auth-area"></div>
@@ -14,26 +14,59 @@
 
     <main class="container">
         <div class="header-text">
-            <span class="card-tag">MODULE 01 · 空間導覽</span>
             <h1>管院空間與設備查詢</h1>
             <p>瀏覽各樓層平面圖、教室容納人數、設備資訊與 360 度環景照片。</p>
         </div>
 
         <section class="grid" aria-label="空間導覽功能">
             <article class="card">
-                <div>
+                <div class="spatial-card-content">
+                    <div class="spatial-card-heading">
+                        <span class="spatial-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none">
+                                <path d="M7 4.5h8l3 3V19a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 6 19V6a1.5 1.5 0 0 1 1-1.5ZM14 4.5V8h4M9 12h6M9 15.5h6M9 8.5h1.5" />
+                            </svg>
+                        </span>
+                    </div>
+                    <h2>借之前看這個</h2>
+                    <p>借用前先了解空間、設備與環景資訊。</p>
+                </div>
+            </article>
+            <article class="card">
+                <div class="spatial-card-content">
+                    <div class="spatial-card-heading">
+                        <span class="spatial-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none">
+                                <path d="M4 20V5.8a1.8 1.8 0 0 1 1.8-1.8h12.4A1.8 1.8 0 0 1 20 5.8V20M3 20h18M8 8h3v3H8zM14 8h3v3h-3zM8 14h3v3H8zM14 14h3v6h-3z" />
+                            </svg>
+                        </span>
+                    </div>
                     <h2>樓層與教室</h2>
                     <p>查詢管理學院各樓層空間與教室資訊。</p>
                 </div>
             </article>
             <article class="card">
-                <div>
+                <div class="spatial-card-content">
+                    <div class="spatial-card-heading">
+                        <span class="spatial-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none">
+                                <path d="M4 5.5A1.5 1.5 0 0 1 5.5 4h13A1.5 1.5 0 0 1 20 5.5v13a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 18.5v-13ZM8 8h8M8 12h8M8 16h4M6.5 8h.01M6.5 12h.01M6.5 16h.01" />
+                            </svg>
+                        </span>
+                    </div>
                     <h2>設備資訊</h2>
                     <p>查看教室容納人數及投影、電腦等設備清單。</p>
                 </div>
             </article>
             <article class="card">
-                <div>
+                <div class="spatial-card-content">
+                    <div class="spatial-card-heading">
+                        <span class="spatial-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none">
+                                <path d="M12 3.5a8.5 8.5 0 1 0 0 17 8.5 8.5 0 0 0 0-17ZM3.8 12h16.4M12 3.5c2.2 2.3 3.3 5.1 3.3 8.5s-1.1 6.2-3.3 8.5C9.8 18.2 8.7 15.4 8.7 12s1.1-6.2 3.3-8.5Z" />
+                            </svg>
+                        </span>
+                    </div>
                     <h2>360 度環景</h2>
                     <p>瀏覽空間環景照片，先行了解場地環境。</p>
                 </div>

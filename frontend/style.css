@@ -511,3 +511,248 @@ footer {
         font-size: 24px;
     }
 }
+
+/* ---------- 空間與設備查詢 Dashboard ---------- */
+body.spatial-dashboard {
+    background: #f5f7fa;
+    color: #1e293b;
+}
+
+.spatial-dashboard .navbar {
+    min-height: 82px;
+    padding: 12px max(24px, calc((100% - 1180px) / 2));
+    background: #ffffff;
+    border-bottom: 1px solid #e2e8f0;
+    box-shadow: 0 2px 8px rgba(30, 41, 59, 0.035);
+}
+
+.spatial-dashboard .brand-logo {
+    max-width: 340px;
+    max-height: 58px;
+}
+
+.spatial-dashboard .nav-right {
+    gap: 12px;
+    color: #64748b;
+}
+
+.spatial-dashboard .nav-right strong {
+    color: #1e293b;
+    font-weight: 600;
+}
+
+.spatial-dashboard .role-badge {
+    padding: 5px 11px;
+    background: #eaf2fa;
+    border: 1px solid #d6e5f4;
+    color: #245b91;
+}
+
+.spatial-dashboard .btn-nav {
+    background: #245b91;
+    border-radius: 8px;
+}
+
+.spatial-dashboard .btn-nav:hover {
+    background: #1c4a78;
+}
+
+.spatial-dashboard .btn-logout {
+    padding: 8px 14px;
+    background: #ffffff;
+    border-color: #e2e8f0;
+    color: #475569;
+}
+
+.spatial-dashboard .btn-logout:hover {
+    background: #eaf2fa;
+    border-color: #b8cde1;
+    color: #245b91;
+}
+
+.spatial-dashboard .container {
+    max-width: 1180px;
+    margin-top: 54px;
+    margin-bottom: 64px;
+}
+
+.spatial-dashboard .header-text {
+    margin-bottom: 30px;
+    padding: 0 0 8px;
+    background: transparent;
+}
+
+.spatial-dashboard .header-text h1 {
+    margin-bottom: 10px;
+    color: #1e293b;
+    font-size: 30px;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    text-shadow: none;
+}
+
+.spatial-dashboard .header-text p {
+    color: #64748b;
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 1.7;
+}
+
+.spatial-dashboard .grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.spatial-dashboard .card {
+    min-height: 244px;
+    padding: 26px 24px;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    background: #ffffff;
+    box-shadow: 0 4px 14px rgba(30, 41, 59, 0.035);
+    justify-content: flex-start;
+    transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+}
+
+.spatial-dashboard .card:hover {
+    transform: translateY(-5px);
+    border-color: #000000;
+    background: #000000;
+    box-shadow: 0 12px 26px rgba(15, 23, 42, 0.18);
+}
+
+.spatial-dashboard .card:hover h2 {
+    color: #ffffff;
+}
+
+.spatial-dashboard .card:hover p {
+    color: #e2e8f0;
+}
+
+.spatial-dashboard .card:hover .spatial-icon {
+    background: #1e293b;
+    color: #ffffff;
+}
+
+.spatial-dashboard .card:hover .spatial-card-index {
+    color: #cbd5e1;
+}
+
+.spatial-card-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+}
+
+.spatial-icon {
+    display: inline-flex;
+    width: 52px;
+    height: 52px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 13px;
+    background: #eaf2fa;
+    color: #245b91;
+}
+
+.spatial-icon svg {
+    width: 26px;
+    height: 26px;
+    stroke: currentColor;
+    stroke-width: 1.7;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.spatial-card-index {
+    color: #94a3b8;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+}
+
+.spatial-dashboard .card h2 {
+    margin-bottom: 9px;
+    color: #1e293b;
+    font-size: 19px;
+    font-weight: 650;
+}
+
+.spatial-dashboard .card p {
+    margin-bottom: 0;
+    color: #64748b;
+    font-size: 14px;
+    line-height: 1.75;
+}
+
+.spatial-dashboard footer {
+    border-top: 1px solid #e2e8f0;
+    background: #ffffff;
+    color: #64748b;
+}
+
+@media (max-width: 800px) {
+    .spatial-dashboard .navbar {
+        padding: 12px 24px;
+    }
+
+    .spatial-dashboard .grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+    }
+}
+
+@media (max-width: 560px) {
+    .spatial-dashboard .navbar {
+        min-height: 0;
+        align-items: flex-start;
+        gap: 12px;
+        flex-direction: column;
+    }
+
+    .spatial-dashboard .brand-logo {
+        max-width: 250px;
+        max-height: 46px;
+    }
+
+    .spatial-dashboard .nav-right {
+        width: 100%;
+        flex-wrap: wrap;
+        gap: 8px;
+        font-size: 13px;
+    }
+
+    .spatial-dashboard .container {
+        margin-top: 32px;
+        margin-bottom: 40px;
+    }
+
+    .spatial-dashboard .header-text h1 {
+        font-size: 25px;
+    }
+
+    .spatial-dashboard .grid {
+        grid-template-columns: 1fr;
+        gap: 14px;
+    }
+
+    .spatial-dashboard .card {
+        min-height: 0;
+        padding: 22px;
+    }
+
+    .spatial-card-heading {
+        margin-bottom: 18px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .spatial-dashboard .card {
+        transition: none;
+    }
+
+    .spatial-dashboard .card:hover {
+        transform: none;
+    }
+}
