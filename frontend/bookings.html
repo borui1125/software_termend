@@ -10,42 +10,6 @@
             background: #f8fafb !important;
             color: #2c353d;
         }
-        .navbar {
-            background: #eef2f4 !important;
-            border-bottom: 1px solid #dce3e6 !important;
-            box-shadow: none !important;
-            padding: 14px 40px;
-        }
-        .brand-group {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            text-decoration: none;
-        }
-        .brand-logos {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .brand-logos img {
-            height: 36px;
-            width: auto;
-            object-fit: contain;
-        }
-        .brand-text {
-            display: flex;
-            flex-direction: column;
-        }
-        .brand-zh {
-            font-size: 15px;
-            font-weight: bold;
-            color: #2c353d;
-            letter-spacing: 1px;
-        }
-        .brand-en {
-            font-size: 11px;
-            color: #64727d;
-        }
         .btn-nav-outline {
             background: #ffffff;
             border: 1px solid #cbd4d8;
@@ -119,7 +83,6 @@
         }
         @media (max-width: 840px) {
             .two-col-grid { grid-template-columns: 1fr; }
-            .navbar { padding: 14px 20px; }
         }
         .panel-card {
             background: #ffffff;
@@ -294,20 +257,12 @@
 <body>
 
     <nav class="navbar">
-        <a href="index.html" class="brand-group">
-            <div class="brand-logos">
-                <img src="images/ncnu_logo.png" alt="國立暨南國際大學" onerror="this.style.display='none'">
-            </div>
-            <div class="brand-text">
-                <span class="brand-zh">國立暨南國際大學 · 管理學院</span>
-                <span class="brand-en">College of Management · 管院小幫手</span>
-            </div>
-        </a>
+        <a href="index.html" class="brand"><img src="photoes/1.png" alt="管院小幫手" class="brand-logo"></a>
         <div class="nav-right">
+            <a href="index.html" class="btn-nav-outline">← 返回服務總覽</a>
             <span id="welcome-text">載入中...</span>
             <span id="role-badge" class="role-badge">User</span>
-            <a href="index.html" class="btn-nav-outline">← 返回服務總覽</a>
-            <button class="btn-nav-outline" onclick="logout()">登出</button>
+            <button class="btn-logout" onclick="logout()">登出</button>
         </div>
     </nav>
 
@@ -822,7 +777,7 @@
 
         function logout() {
             localStorage.removeItem('user');
-            window.location.href = 'index.html';
+            window.location.reload();
         }
 
         initOptions();
