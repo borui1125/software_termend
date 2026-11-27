@@ -16,9 +16,12 @@ CREATE TABLE IF NOT EXISTS users (
     email VARCHAR(100) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
     role_id INTEGER REFERENCES roles(id) DEFAULT 3,
-    status VARCHAR(20) NOT NULL DEFAULT 'pending', -- pending(待審核), approved(已通過), rejected(已退件)
+    status VARCHAR(20) NOT NULL DEFAULT 'approved', -- 帳號註冊後立即啟用
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+-- 舊資料庫若曾有待審核帳號，一併啟用
+UPDATE users SET status = 'approved' WHERE status IN ('pending', 'rejected');
 
 -- 預設測試帳號（密碼皆為 123456，且預設為已通過審核，方便三人開工測試）
 INSERT INTO users (username, email, password, role_id, status)

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>帳號審核與權限管理 - 管院小幫手</title>
+    <title>帳號與權限管理 - 管院小幫手</title>
     <link rel="stylesheet" href="style.css">
     <style>
         /* 管理員頁面專屬微調（延續全站莫蘭迪灰藍色系） */
@@ -124,7 +124,7 @@
 <body>
 
     <nav class="navbar">
-        <a href="index.html" class="brand">管院小幫手</a>
+        <a href="index.html" class="brand"><img src="photoes/2.png" alt="管院小幫手" class="brand-logo"></a>
         <div class="nav-right">
             <span id="welcome-text">載入中...</span>
             <span class="role-badge">Admin</span>
@@ -135,16 +135,8 @@
 
     <main class="container">
         <div class="header-text">
-            <h1>帳號審核與權限管理</h1>
-            <p>審核新註冊的使用者申請，並指派系統角色權限（Admin / Teacher / User）</p>
-        </div>
-
-        <!-- 狀態篩選列 -->
-        <div class="filter-bar">
-            <button class="filter-btn active" onclick="setFilter('all', this)">全部帳號</button>
-            <button class="filter-btn" onclick="setFilter('pending', this)">待審核 (Pending)</button>
-            <button class="filter-btn" onclick="setFilter('approved', this)">已通過 (Approved)</button>
-            <button class="filter-btn" onclick="setFilter('rejected', this)">已退件 (Rejected)</button>
+            <h1>帳號與權限管理</h1>
+            <p>查看已註冊帳號並指派系統角色權限（Admin / Teacher / User）</p>
         </div>
 
         <!-- 使用者資料表 -->
@@ -156,13 +148,12 @@
                         <th>帳號</th>
                         <th>學校信箱</th>
                         <th>指派角色</th>
-                        <th>審核狀態</th>
                         <th>管理操作</th>
                     </tr>
                 </thead>
                 <tbody id="users-tbody">
                     <tr>
-                        <td colspan="6" class="empty-row">資料載入中...</td>
+                        <td colspan="5" class="empty-row">資料載入中...</td>
                     </tr>
                 </tbody>
             </table>
@@ -187,8 +178,6 @@
         }
 
         let allUsers = [];
-        let currentFilter = 'all';
-
         // 2. 載入所有使用者清單
         async function fetchUsers() {
             try {
@@ -204,59 +193,42 @@
                 renderTable();
             } catch (err) {
                 document.getElementById('users-tbody').innerHTML =
-                    '<tr><td colspan="6" class="empty-row">無法連線至後端伺服器，請確認 Flask 是否已啟動。</td></tr>';
+                    '<tr><td colspan="5" class="empty-row">無法連線至後端伺服器，請確認 Flask 是否已啟動。</td></tr>';
             }
-        }
-
-        function setFilter(status, btnEl) {
-            currentFilter = status;
-            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
-            btnEl.classList.add('active');
-            renderTable();
         }
 
         function renderTable() {
             const tbody = document.getElementById('users-tbody');
-            const filtered = currentFilter === 'all'
-                ? allUsers
-                : allUsers.filter(u => u.status === currentFilter);
+            const filtered = allUsers;
 
             if (filtered.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" class="empty-row">目前沒有符合條件的帳號資料</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="5" class="empty-row">目前沒有符合條件的帳號資料</td></tr>';
                 return;
             }
 
-            const statusLabels = {
-                pending: '<span class="status-badge status-pending">待審核</span>',
-                approved: '<span class="status-badge status-approved">已通過</span>',
-                rejected: '<span class="status-badge status-rejected">已退件</span>'
-            };
-
             tbody.innerHTML = filtered.map(u => {
-                const isSelf = u.id === currentUser.id || u.username === currentUser.username;
+                const userId = u.id ?? u.user_id;
+                const isSelf = userId === currentUser.id || userId === currentUser.user_id || u.username === currentUser.username;
                 const roleId = Number(u.role_id) || (u.role === 'Admin' ? 1 : u.role === 'Teacher' ? 2 : 3);
 
                 return `
                     <tr>
-                        <td>${u.id}</td>
+                        <td>${userId}</td>
                         <td><strong>${u.username}</strong></td>
                         <td>${u.email}</td>
                         <td>
                             <select class="role-select" ${isSelf ? 'disabled' : ''}
-                                onchange="updateUser(${u.id}, '${u.status}', this.value)">
+                                onchange="updateUser(${userId}, this.value)">
                                 <option value="1" ${roleId === 1 ? 'selected' : ''}>Admin (管理員)</option>
                                 <option value="2" ${roleId === 2 ? 'selected' : ''}>Teacher (教師)</option>
                                 <option value="3" ${roleId === 3 ? 'selected' : ''}>User (學生/一般)</option>
                             </select>
                         </td>
-                        <td>${statusLabels[u.status] || u.status}</td>
                         <td>
                             ${isSelf
                                 ? '<span class="self-tag">目前登入帳號</span>'
                                 : `<div class="action-group">
-                                    <button class="btn-sm btn-approve" onclick="updateUser(${u.id}, 'approved', ${roleId})">通過</button>
-                                    <button class="btn-sm btn-reject" onclick="updateUser(${u.id}, 'rejected', ${roleId})">退件</button>
-                                    <button class="btn-sm btn-delete" onclick="deleteUser(${u.id}, '${u.username}')">刪除</button>
+                                    <button class="btn-sm btn-delete" onclick="deleteUser(${userId}, '${u.username}')">刪除</button>
                                    </div>`
                             }
                         </td>
@@ -265,14 +237,13 @@
             }).join('');
         }
 
-        // 3. 更新帳號審核狀態或角色權限
-        async function updateUser(userId, newStatus, newRoleId) {
+        // 3. 更新帳號角色權限
+        async function updateUser(userId, newRoleId) {
             try {
                 const res = await fetch(`${API_BASE}/users/${userId}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        status: newStatus,
                         role_id: Number(newRoleId)
                     })
                 });

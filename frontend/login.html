@@ -33,7 +33,7 @@
             <!-- 註冊區塊 -->
             <div id="register-section" class="hidden">
                 <h1>建立新帳號</h1>
-                <p class="subtitle">註冊後需經管理員審核開通方可使用。</p>
+                <p class="subtitle">註冊成功後立即登入並進入系統。</p>
 
                 <form id="register-form">
                     <div class="form-group">
@@ -55,7 +55,7 @@
                             <option value="2">授課教師 (Teacher)</option>
                         </select>
                     </div>
-                    <button type="submit" class="btn-primary">送出註冊申請</button>
+                    <button type="submit" class="btn-primary">註冊</button>
                 </form>
 
                 <button type="button" class="btn-secondary" onclick="toggleMode('login')">返回登入</button>
@@ -76,7 +76,7 @@
             'spaces.html': '管院空間與設備查詢',
             'bookings.html': '空間與物品預約借用',
             'courses.html': '課程時間與志願排課',
-            'admin_users.html': '帳號審核與權限管理'
+            'admin_users.html': '帳號與權限管理'
         };
 
         if (redirectTarget && moduleNames[redirectTarget]) {
@@ -139,7 +139,14 @@
                     return;
                 }
 
-                alert(data.message || '註冊成功！請靜待管理員審核後登入。');
+                if (data.user) {
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    alert(data.message || '註冊成功！');
+                    window.location.href = redirectTarget || 'index.html';
+                    return;
+                }
+
+                alert(data.message || '註冊成功！');
                 document.getElementById('register-form').reset();
                 toggleMode('login');
             } catch (err) {

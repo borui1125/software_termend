@@ -6,10 +6,10 @@
     <title>管院小幫手 - 服務入口</title>
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="home-page">
 
     <nav class="navbar">
-        <a href="index.html" class="brand">管院小幫手</a>
+        <a href="index.html" class="brand"><img src="photoes/1.png" alt="管院小幫手" class="brand-logo"></a>
         <div class="nav-right" id="nav-auth-area"></div>
     </nav>
 
@@ -18,6 +18,15 @@
             <h1>管理學院整合服務平台</h1>
             <p>請選擇下方功能模組（進入模組前需先完成帳號登入）</p>
         </div>
+
+        <section class="photo-slider" aria-label="管理學院圖片輪播">
+            <div class="slider-frame">
+                <img id="slider-image" src="photoes/3.jpg" alt="管理學院外觀">
+            </div>
+            <button class="slider-arrow slider-prev" type="button" aria-label="上一張照片">&#8249;</button>
+            <button class="slider-arrow slider-next" type="button" aria-label="下一張照片">&#8250;</button>
+            <div class="slider-dots" id="slider-dots" aria-label="選擇照片"></div>
+        </section>
 
         <div class="grid">
             <div class="card">
@@ -50,8 +59,8 @@
             <div class="card hidden" id="admin-card">
                 <div>
                     <span class="card-tag">ADMIN · 系統管理</span>
-                    <h2>帳號審核與權限管理</h2>
-                    <p>審核新註冊的使用者帳號申請、指派教師或管理員角色權限，維護系統資料安全。</p>
+                    <h2>帳號與權限管理</h2>
+                    <p>查看註冊帳號、指派教師或管理員角色權限，維護系統資料安全。</p>
                 </div>
                 <button class="btn-enter btn-admin" onclick="enterModule('admin_users.html')">進入帳號管理 →</button>
             </div>
@@ -93,6 +102,59 @@
             localStorage.removeItem('user');
             window.location.reload();
         }
+
+        const sliderImages = [
+            { src: 'photoes/3.jpg', alt: '管理學院外觀' },
+            { src: 'photoes/4.jpg', alt: '管理學院入口建築' },
+            { src: 'photoes/5.jpg', alt: '管理學院入口與綠樹' },
+            { src: 'photoes/6.jpg', alt: '管理學院演講廳' },
+            { src: 'photoes/7.jpg', alt: '管理學院櫻花草坪' }
+        ];
+
+        const sliderImage = document.getElementById('slider-image');
+        const sliderDots = document.getElementById('slider-dots');
+        let sliderIndex = 0;
+        let sliderTimer;
+
+        sliderImages.forEach((image, index) => {
+            const dot = document.createElement('button');
+            dot.type = 'button';
+            dot.className = 'slider-dot';
+            dot.setAttribute('aria-label', `顯示第 ${index + 1} 張照片`);
+            dot.addEventListener('click', () => showSlide(index, true));
+            sliderDots.appendChild(dot);
+        });
+
+        function showSlide(index, restartTimer = false) {
+            sliderIndex = (index + sliderImages.length) % sliderImages.length;
+            const image = sliderImages[sliderIndex];
+            sliderImage.classList.add('is-changing');
+            window.setTimeout(() => {
+                sliderImage.src = image.src;
+                sliderImage.alt = image.alt;
+                sliderImage.classList.remove('is-changing');
+            }, 180);
+
+            [...sliderDots.children].forEach((dot, dotIndex) => {
+                dot.classList.toggle('active', dotIndex === sliderIndex);
+                dot.setAttribute('aria-current', dotIndex === sliderIndex ? 'true' : 'false');
+            });
+
+            if (restartTimer) {
+                restartSliderTimer();
+            }
+        }
+
+        function restartSliderTimer() {
+            window.clearInterval(sliderTimer);
+            sliderTimer = window.setInterval(() => showSlide(sliderIndex + 1), 6000);
+        }
+
+        document.querySelector('.slider-prev').addEventListener('click', () => showSlide(sliderIndex - 1, true));
+        document.querySelector('.slider-next').addEventListener('click', () => showSlide(sliderIndex + 1, true));
+
+        showSlide(0);
+        restartSliderTimer();
     </script>
 </body>
 </html>

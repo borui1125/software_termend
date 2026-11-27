@@ -39,7 +39,7 @@ function renderNavbar(activePage = "") {
                 <a href="spaces.html" style="color:${activePage === 'spaces' ? '#7fe3e8' : '#e2e8f0'}; text-decoration:none;">管院空間查詢</a>
                 <a href="bookings.html" style="color:${activePage === 'bookings' ? '#7fe3e8' : '#e2e8f0'}; text-decoration:none;">空間與物品借用</a>
                 <a href="courses.html" style="color:${activePage === 'courses' ? '#7fe3e8' : '#e2e8f0'}; text-decoration:none;">課程排課系統</a>
-                ${isAdmin ? `<a href="admin_users.html" style="color:${activePage === 'admin_users' ? '#7fe3e8' : '#ffd166'}; text-decoration:none;">帳號審核管理</a>` : ""}
+                ${isAdmin ? `<a href="admin_users.html" style="color:${activePage === 'admin_users' ? '#7fe3e8' : '#ffd166'}; text-decoration:none;">帳號與權限管理</a>` : ""}
             </div>
             <div style="display:flex; align-items:center; gap:12px; font-size:14px;">
                 ${
